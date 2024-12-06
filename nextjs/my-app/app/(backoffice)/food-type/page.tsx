@@ -98,7 +98,7 @@ export default function Page() {
   };
 
   return (
-    <div className="mt-3 border border-gray-200 bg-white rounded-md shadow-md overflow-hidden">
+    <div className="min-h-full  border border-gray-200 bg-white rounded-md shadow-md overflow-hidden">
       <div className="bg-white border-b border-gray-200 text-lg font-bold p-3">
         ประเภทอาหาร/เครื่องดื่ม
       </div>
@@ -122,7 +122,9 @@ export default function Page() {
           </thead>
           <tbody>
             {foodTypes.map((item: any, index: number) => (
-              <tr key={index}>
+              <tr key={index} className={`${
+                index % 2 === 0 ? "bg-white" : "bg-gray-50"
+              } border-b`}>
                 <td className="p-2 border border-gray-300">{item.name}</td>
                 <td className="p-2 border border-gray-300">{item.remark}</td>
                 <td className="p-2 border border-gray-300 ">

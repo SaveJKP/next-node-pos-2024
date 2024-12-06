@@ -83,143 +83,145 @@ export default function Page() {
 
   return (
     <>
-      <div className="card mt-3">
-        <div className="card-header">รายงานการขาย</div>
-        <div className="card-body">
-          <div className="row">
-            <div className="col-md-2">
-              <div>จากวันที่</div>
+      <div className="min-h-full  border border-gray-200 bg-white rounded-md shadow-md overflow-hidden">
+        <div className="bg-white border-b border-gray-200 text-lg font-bold p-3">
+          รายงานการขาย
+        </div>
+        <div className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block mb-2">จากวันที่</label>
               <input
                 type="date"
-                className="form-control"
+                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
                 value={dayjs(fromDate).format("YYYY-MM-DD")}
                 onChange={(e) => setFromDate(new Date(e.target.value))}
               />
             </div>
-
-            <div className="col-md-2">
-              <div>ถึงวันที่</div>
+            <div>
+              <label className="block mb-2">ถึงวันที่</label>
               <input
                 type="date"
-                className="form-control"
+                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
                 value={dayjs(toDate).format("YYYY-MM-DD")}
                 onChange={(e) => setToDate(new Date(e.target.value))}
               />
             </div>
-
-            <div className="col-md-2">
-              <div>&nbsp;</div>
-              <button className="btn btn-primary" onClick={fetchData}>
-                <i className="fa fa-search me-2"></i>
+            <div className="flex items-end">
+              <button
+                className="px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+                onClick={fetchData}
+              >
+                <i className="fa fa-search mr-2"></i>
                 แสดงรายการ
               </button>
             </div>
           </div>
 
-          <table className="table table-bordered mt-3">
+          <div className="overflow-x-auto mt-4">
+            <table className="w-full table-auto border-collapse border border-gray-200">
+              <thead>
+                <tr className="bg-gray-100 text-left">
+                  <th className="border px-4 py-2 text-center">ยกเลิกบิล</th>
+                  <th className="border px-4 py-2 text-center">วันที่</th>
+                  <th className="border px-4 py-2">รหัสบิล</th>
+                  <th className="border px-4 py-2">พนักงานขาย</th>
+                  <th className="border px-4 py-2 text-right">โต๊ะ</th>
+                  <th className="border px-4 py-2 text-right">จำนวนเงิน</th>
+                </tr>
+              </thead>
+              <tbody>
+                {billSales.length > 0 &&
+                  billSales.map((billSale: any, index: number) => (
+                    <tr key={index}   className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} `}>
+                      <td className="border px-4 py-2 text-center">
+                        <button
+                          className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 focus:ring focus:ring-red-300 mr-2"
+                          onClick={() => handCancelBill(billSale.id)}
+                        >
+                          <i className="fa fa-times mr-2"></i>ยกเลิกบิล
+                        </button>
+                        <button
+                          className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 focus:ring focus:ring-blue-300"
+                          onClick={() => {
+                            setBillSaleDetails(billSale.BillSaleDetails);
+                            openModal();
+                          }}
+                          data-bs-toggle="modal"
+                          data-bs-target="#modalBillSaleDetail"
+                        >
+                          <i className="fa fa-info mr-2"></i>รายละเอียด
+                        </button>
+                      </td>
+                      <td className="border px-4 py-2 text-center">
+                        {dayjs(billSale.payDate).format("DD/MM/YYYY HH:mm")}
+                      </td>
+                      <td className="border px-4 py-2">{billSale.id}</td>
+                      <td className="border px-4 py-2">{billSale.User.name}</td>
+                      <td className="border px-4 py-2 text-right">
+                        {billSale.tableNo}
+                      </td>
+                      <td className="border px-4 py-2 text-right">
+                        {billSale.amount.toLocaleString("th-TH")}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+              <tfoot>
+                <tr className="font-bold">
+                  <td colSpan={5} className="border px-4 py-2">
+                    รวม
+                  </td>
+                  <td className="border px-4 py-2 text-right">
+                    {sumAmount.toLocaleString("th-TH")}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {isOpen && (
+        <MyModal
+          id="modalBillSaleDetail"
+          title="รายละเอียดบิล"
+          onClose={closeModal}
+        >
+          <table className="w-full table-auto border-collapse border border-gray-200">
             <thead>
-              <tr>
-                <th style={{ width: "250px" }} className="text-center">
-                  ยกเลิกบิล
-                </th>
-                <th style={{ width: "200px" }} className="text-center">
-                  วันที่
-                </th>
-                <th>รหัสบิล</th>
-                <th style={{ width: "150px" }}>พนักงานขาย</th>
-                <th style={{ width: "100px" }} className="text-end">
-                  โต๊ะ
-                </th>
-                <th style={{ width: "100px" }} className="text-end">
-                  จำนวนเงิน
-                </th>
+              <tr className="bg-gray-100">
+                <th className="border px-4 py-2">รายการ</th>
+                <th className="border px-4 py-2 text-right">ราคา</th>
+                <th className="border px-4 py-2">รสชาติ</th>
+                <th className="border px-4 py-2">ขนาด</th>
               </tr>
             </thead>
             <tbody>
-              {billSales.length > 0 &&
-                billSales.map((billSale: any, index: number) => (
-                  <tr key={index}>
-                    <td className="text-center">
-                      <button
-                        className="btn btn-danger me-2"
-                        onClick={() => handCancelBill(billSale.id)}
-                      >
-                        <i className="fa fa-times me-2"></i>
-                        ยกเลิกบิล
-                      </button>
-
-                      <button
-                        className="btn btn-primary"
-                        onClick={() =>{
-                          setBillSaleDetails(billSale.BillSaleDetails);
-                          openModal();
-                        }
-                        }
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalBillSaleDetail"
-                      >
-                        <i className="fa fa-info me-2"></i>
-                        รายละเอียด
-                      </button>
+              {billSaleDetails.length > 0 &&
+                billSaleDetails.map((billSaleDetail: any, index: number) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="border px-4 py-2">
+                      {billSaleDetail.Food.name}
                     </td>
-                    <td>
-                      {dayjs(billSale.payDate).format("DD/MM/YYYY HH:mm")}
+                    <td className="border px-4 py-2 text-right">
+                      {(
+                        billSaleDetail.price + billSaleDetail.moneyAdded
+                      ).toLocaleString("th-TH")}
                     </td>
-                    <td>{billSale.id}</td>
-                    <td>{billSale.User.name}</td>
-                    <td className="text-end">{billSale.tableNo}</td>
-                    <td className="text-end">
-                      {billSale.amount.toLocaleString("th-TH")}
+                    <td className="border px-4 py-2">
+                      {billSaleDetail.Taste?.name}
+                    </td>
+                    <td className="border px-4 py-2">
+                      {billSaleDetail.foodSizeId &&
+                        `${billSaleDetail.FoodSize?.name} +${billSaleDetail.moneyAdded}`}
                     </td>
                   </tr>
                 ))}
             </tbody>
-            <tfoot>
-              <tr>
-                <th colSpan={5}>รวม</th>
-                <th className="text-end">
-                  {sumAmount.toLocaleString("th-TH")}
-                </th>
-              </tr>
-            </tfoot>
           </table>
-        </div>
-      </div>
-      {isOpen && ( // แสดง Modal เฉพาะเมื่อ isOpen เป็น true
-      <MyModal id="modalBillSaleDetail" title="รายละเอียดบิล" onClose={closeModal}>
-        <table className="table table-bordered table-striped">
-          <thead>
-            <tr>
-              <th>รายการ</th>
-              <th className="text-end">ราคา</th>
-              <th>รสชาติ</th>
-              <th>ขนาด</th>
-            </tr>
-          </thead>
-          <tbody>
-            {billSaleDetails.length > 0 &&
-              billSaleDetails.map((billSaleDetail: any, index: number) => (
-                <tr key={index}>
-                  <td>{billSaleDetail.Food.name}</td>
-                  <td className="text-end">
-                    {(
-                      billSaleDetail.price + billSaleDetail.moneyAdded
-                    ).toLocaleString("th-TH")}
-                  </td>
-                  <td>{billSaleDetail.Taste?.name}</td>
-                  <td>
-                    {billSaleDetail.foodSizeId &&
-                      billSaleDetail.FoodSize?.name +
-                        " +" +
-                        billSaleDetail.moneyAdded}
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </MyModal>
-    )}
-      
+        </MyModal>
+      )}
     </>
   );
 }

@@ -52,44 +52,58 @@ export default function FoodPaginate() {
   };
 
   return (
-    <div className="card mt-3">
-      <div className="card-header">รายการอาหาร</div>
-      <div className="card-body">
-        <table className="table table-bordered">
+    <div className="min-h-full border border-gray-200 bg-white rounded-md shadow-md overflow-hidden">
+      <div className="bg-white border-b border-gray-200 text-lg font-bold p-3">
+        รายการอาหาร
+      </div>
+      <div className="p-4">
+        <table className="table-auto w-full border border-gray-300">
           <thead>
-            <tr>
-              <th>ชื่ออาหาร</th>
-              <th className="text-end" style={{ width: "100px" }}>
+            <tr className="bg-gray-100">
+              <th className="px-4 py-2 text-left">ชื่ออาหาร</th>
+              <th className="px-4 py-2 text-right" style={{ width: "100px" }}>
                 ราคา
               </th>
             </tr>
           </thead>
-          <tbody >
-            {foods.map((food: any) => (
-              <tr key={food.id}>
-                <td>{food.name}</td>
-                <td className="text-end">{food.price}</td>
+          <tbody>
+            {foods.map((food: any, index: number) => (
+              <tr
+                key={food.id}
+                className={`${
+                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                } border-b`}
+              >
+                <td className="px-4 py-2">{food.name}</td>
+                <td className="px-4 py-2 text-right">
+                  {food.price.toLocaleString("th-TH")}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
-
-        <div className="mt-2">
-          <div>
-            จำนวนรายการ: {totalItems} จำนวนหน้า: {totalPage}
+  
+        <div className="mt-4">
+          <div className="text-sm text-gray-600">
+            จำนวนรายการ: {totalItems} | จำนวนหน้า: {totalPage}
           </div>
         </div>
-
-        <div className="mt-2">
+  
+        <div className="mt-4 flex flex-wrap justify-center items-center space-x-2">
           <button
             disabled={currentPage === 1}
-            className="btn btn-primary me-1"
+            className={`px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 ${
+              currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             onClick={() => changePage(1)}
           >
-            <i className="fa fa-chevron-left me-2"></i>หน้าแรก
+            <i className="fa fa-chevron-left mr-2"></i>หน้าแรก
           </button>
           <button
-            className="btn btn-primary me-1"
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 ${
+              currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             onClick={() => changePage(currentPage - 1)}
           >
             <i className="fa fa-chevron-left"></i>
@@ -98,8 +112,10 @@ export default function FoodPaginate() {
             <button
               key={index}
               disabled={currentPage === index + 1}
-              className={`btn btn-primary me-1 ${
-                currentPage === index + 1 ? "active" : ""
+              className={`px-4 py-2 rounded ${
+                currentPage === index + 1
+                  ? "bg-blue-700 text-white"
+                  : "bg-blue-500 text-white hover:bg-blue-600"
               }`}
               onClick={() => changePage(index + 1)}
             >
@@ -108,20 +124,25 @@ export default function FoodPaginate() {
           ))}
           <button
             disabled={currentPage === totalPage}
-            className="btn btn-primary me-1"
+            className={`px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 ${
+              currentPage === totalPage ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             onClick={() => changePage(currentPage + 1)}
           >
             <i className="fa fa-chevron-right"></i>
           </button>
           <button
             disabled={currentPage === totalPage}
-            className="btn btn-primary"
+            className={`px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 ${
+              currentPage === totalPage ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             onClick={() => changePage(totalPage)}
           >
-            <i className="fa fa-chevron-right me-2"></i>หน้าสุดท้าย
+            <i className="fa fa-chevron-right mr-2"></i>หน้าสุดท้าย
           </button>
         </div>
       </div>
     </div>
   );
+  
 }

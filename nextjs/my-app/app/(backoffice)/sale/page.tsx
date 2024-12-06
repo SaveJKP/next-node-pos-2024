@@ -460,8 +460,8 @@ export default function Page() {
 
   return (
     <>
-      <div className="bg-white shadow-md rounded-md mt-3">
-        <div className="bg-gray-800 text-white px-4 py-2 rounded-t-md">
+        <div className="min-h-full border border-gray-200 bg-white rounded-md shadow-md overflow-hidden">
+        <div className="text-white bg-gray-800 border-b border-gray-200 text-lg font-bold p-3">
           ขายสินค้า
         </div>
         <div className="p-4 bg-white">

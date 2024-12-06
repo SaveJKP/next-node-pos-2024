@@ -77,84 +77,86 @@ const OrganizationPage = () => {
   };
 
   return (
-    <div className="card mt-3">
-      <div className="card-header">
-        <h5>ข้อมูลร้าน</h5>
+    <div className="min-h-full  border border-gray-200 bg-white rounded-md shadow-md overflow-hidden">
+      <div className="bg-white border-b border-gray-200 text-lg font-bold p-3">
+        ข้อมูลร้าน
       </div>
-      <div className="card-body">
-        <div>ชื่อ</div>
+      <div className="p-4">
+        <div className="mb-2">ชื่อ</div>
         <input
           type="text"
-          className="form-control"
+          className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
 
-        <div className="mt-3">ที่อยู่</div>
+        <div className="mt-3 mb-2">ที่อยู่</div>
         <input
           type="text"
-          className="form-control"
+          className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
         />
 
-        <div className="mt-3">เบอร์โทร</div>
+        <div className="mt-3 mb-2">เบอร์โทร</div>
         <input
           type="text"
-          className="form-control"
+          className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
 
-        <div className="mt-3">อีเมล</div>
+        <div className="mt-3 mb-2">อีเมล</div>
         <input
           type="text"
-          className="form-control"
+          className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        <div className="mt-3">เว็บไซต์</div>
+        <div className="mt-3 mb-2">เว็บไซต์</div>
         <input
           type="text"
-          className="form-control"
+          className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
           value={website}
           onChange={(e) => setWebsite(e.target.value)}
         />
 
-        <div className="mt-3">โลโก้</div>
+        <div className="mt-3 mb-2">โลโก้</div>
         {logo && (
           <img
             src={`${config.apiServer}/uploads/${logo}`}
             alt="logo"
-            className="img-fluid mb-2 mt-2"
-            width={100}
+            className="mb-3 mt-2 w-24 h-auto"
           />
         )}
         <input
           type="file"
-          className="form-control"
+          className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
           onChange={handleFileChange}
         />
 
-        <div className="mt-3">เลขประจำตัวผู้เสียภาษี</div>
+        <div className="mt-3 mb-2">เลขประจำตัวผู้เสียภาษี</div>
         <input
           type="text"
-          className="form-control"
+          className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
           value={taxCode}
           onChange={(e) => setTaxCode(e.target.value)}
         />
 
-        <div className="mt-3">เลขบัญชีพร้อมเพย์</div>
+        <div className="mt-3 mb-2">เลขบัญชีพร้อมเพย์</div>
         <input
           type="text"
-          className="form-control"
+          className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
           value={promptpay}
           onChange={(e) => setPromptpay(e.target.value)}
         />
 
-        <button onClick={save} className="btn btn-primary mt-3">
-          <i className="fa fa-save me-2"></i>
+        <button
+          onClick={save}
+          className="mt-3 w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+        >
+          <i className="fa fa-save mr-2"></i>
           บันทึก
         </button>
       </div>

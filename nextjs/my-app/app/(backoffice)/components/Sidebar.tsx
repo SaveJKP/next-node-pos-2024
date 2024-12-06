@@ -71,17 +71,17 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className="position-fixed bg-black h-screen w-60 rounded-r-3xl flex  flex-col ">
-        <header className="mt-4 w-full flex flex-col items-center justify-center  ">
+      <aside className="fixed bg-black h-screen w-60 rounded-r-3xl flex  flex-col ">
+        <header className="mt-7 w-full flex flex-col items-center justify-center  ">
           <p className="text-white text-2xl">Food Pos</p>
 
           <img
-            className="w-20 h-20 object-cover rounded-full border-2 border-yellow-400"
+            className="mt-2 w-20 h-20 object-cover rounded-full border-2 border-white-400"
             src="https://cdn.pixabay.com/photo/2023/08/30/22/59/chicken-8224162_1280.jpg"
             alt=""
           />
 
-          <a href="#" className="">
+          <a href="#" className="text-blue-500">
             {name}
           </a>
           <button className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded" onClick={signOut}>
@@ -89,8 +89,8 @@ export default function Sidebar() {
           </button>
         </header>
 
-        <nav className=" ml-4 mt-5">
-          <ul className="gap-5 flex flex-col">
+        <nav className=" ml-4 mt-10">
+          <ul className="gap-5 flex flex-col text-blue-500">
             {userLevel === "admin" && (
               <li className="">
                 <Link href="/dashboard" className="">

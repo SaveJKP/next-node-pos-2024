@@ -56,14 +56,16 @@ export default function ReportSumSalePerMonth() {
   };
 
   return (
-    <div className="card mt-3">
-      <div className="card-header">สรุปยอดขายรายเดือน</div>
-      <div className="card-body">
-        <div className="row">
-          <div className="col-md-3">
-            <div>ปี</div>
+    <div className="min-h-full border border-gray-200 bg-white rounded-md shadow-md overflow-hidden">
+      <div className="bg-white border-b border-gray-200 text-lg font-bold p-3">
+        สรุปยอดขายรายเดือน
+      </div>
+      <div className="p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block mb-2 font-semibold">ปี</label>
             <select
-              className="form-control"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
             >
@@ -74,44 +76,50 @@ export default function ReportSumSalePerMonth() {
               ))}
             </select>
           </div>
-          <div className="col-md-3">
-            <div>&nbsp;</div>
-            <button className="btn btn-primary" onClick={fetchData}>
-              <i className="fa fa-search me-2" />
+          <div className="flex items-end">
+            <button
+              className="w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+              onClick={fetchData}
+            >
+              <i className="fa fa-search mr-2" />
               แสดงรายการ
             </button>
           </div>
         </div>
-
-        <table className="table table-bordered table-striped mt-3">
-          <thead>
-            <tr>
-              <th>เดือน</th>
-              <th className="text-end" style={{ width: "100px" }}>
-                ยอดขาย
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((item: any, index: number) => (
-              <tr key={index}>
-                <td>{item.month}</td>
-                <td className="text-end">
-                  {item.amount.toLocaleString("th-TH")}
+  
+        <div className="overflow-x-auto mt-4">
+          <table className="w-full border-collapse border border-gray-200">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border px-4 py-2 text-left">เดือน</th>
+                <th className="border px-4 py-2 text-right">ยอดขาย</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((item: any, index: number) => (
+                <tr
+                  key={index}
+                  className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} `}
+                >
+                  <td className="border px-4 py-2">{item.month}</td>
+                  <td className="border px-4 py-2 text-right">
+                    {item.amount.toLocaleString("th-TH")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="font-bold">
+                <td className="border px-4 py-2">รวม</td>
+                <td className="border px-4 py-2 text-right">
+                  {totalAmount.toLocaleString("th-TH")}
                 </td>
               </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td>รวม</td>
-              <td className="text-end">
-                {totalAmount.toLocaleString("th-TH")}
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+            </tfoot>
+          </table>
+        </div>
       </div>
     </div>
   );
+  
 }
