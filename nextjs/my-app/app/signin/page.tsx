@@ -28,7 +28,7 @@ export default function Page() {
         localStorage.setItem("next_name", res.data.name);
         localStorage.setItem("next_user_id", res.data.id);
 
-        router.push("/backoffice");
+        router.push("/sale");
       }
     } catch (e: any) {
       if (e.response.status == 401) {

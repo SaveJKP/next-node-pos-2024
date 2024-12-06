@@ -2,58 +2,47 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 module.exports = {
-  // ฟังก์ชันสร้างข้อมูลขายชั่วคราว
   create: async (req, res) => {
     try {
-      // ตรวจสอบข้อมูลในตาราง saleTemp โดยการค้นหาข้อมูลที่ตรงกับ userId, tableNo และ foodId
+      // check row saleTemp
       const rowSaleTemp = await prisma.saleTemp.findFirst({
         where: {
-          userId: req.body.userId, // ตรวจสอบ userId จาก body ของ request
-          tableNo: req.body.tableNo, // ตรวจสอบ tableNo จาก body ของ request
-          foodId: req.body.foodId, // ตรวจสอบ foodId จาก body ของ request
+          userId: req.body.userId,
+          tableNo: req.body.tableNo,
+          foodId: req.body.foodId,
         },
         include: {
-          SaleTempDetails: true, // รวมข้อมูลรายละเอียด SaleTempDetails มาในผลลัพธ์
+          SaleTempDetails: true,
         },
       });
 
-      // เช็คว่าไม่พบข้อมูลใน saleTemp (กรณีไม่มีการบันทึกขายชั่วคราว)
       if (!rowSaleTemp) {
-        // ถ้ายังไม่มีข้อมูลขายชั่วคราว ให้สร้างรายการขายใหม่
         await prisma.saleTemp.create({
           data: {
-            userId: req.body.userId, // ใช้ userId จาก request body
-            tableNo: req.body.tableNo, // ใช้ tableNo จาก request body
-            foodId: req.body.foodId, // ใช้ foodId จาก request body
-            qty: 1, // ตั้งจำนวนเริ่มต้นเป็น 1
+            userId: req.body.userId,
+            tableNo: req.body.tableNo,
+            foodId: req.body.foodId,
+            qty: 1,
           },
         });
       } else {
-        // ถ้ามีข้อมูล saleTemp อยู่แล้ว
-        // เช็คว่ามีรายละเอียดใน SaleTempDetails หรือไม่
         if (rowSaleTemp.SaleTempDetails.length === 0) {
-          // ถ้าไม่มีรายละเอียดใน SaleTempDetails
-          // ให้ทำการอัปเดตยอดขายใน saleTemp โดยเพิ่มจำนวนขึ้น 1
           await prisma.saleTemp.update({
             where: {
-              id: rowSaleTemp.id, // ใช้ id ของ rowSaleTemp ที่ค้นพบ
+              id: rowSaleTemp.id,
             },
             data: {
-              qty: rowSaleTemp.qty + 1, // เพิ่มจำนวนสินค้าใน saleTemp
+              qty: rowSaleTemp.qty + 1,
             },
           });
         }
       }
 
-      // ถ้าทุกอย่างสำเร็จ ส่งผลลัพธ์กลับไปยัง client
       return res.send({ message: "success" });
     } catch (e) {
-      // ถ้ามีข้อผิดพลาด ส่งรหัสสถานะ 500 และข้อความแสดงข้อผิดพลาด
       return res.status(500).send({ error: e.message });
     }
   },
-
-  // ฟังก์ชันดึงรายการ saleTemp ทั้งหมด
   list: async (req, res) => {
     try {
       const saleTemps = await prisma.saleTemp.findMany({
@@ -77,19 +66,16 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  // ฟังก์ชันลบรายการ saleTemp
   remove: async (req, res) => {
     try {
       const saleTempId = parseInt(req.params.id);
 
-      // ลบรายละเอียดของ saleTemp
       await prisma.saleTempDetail.deleteMany({
         where: {
           saleTempId: saleTempId,
         },
       });
 
-      // ลบ saleTemp
       await prisma.saleTemp.delete({
         where: {
           id: saleTempId,
@@ -101,7 +87,6 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  // ฟังก์ชันลบรายการ saleTemp ทั้งหมด
   removeAll: async (req, res) => {
     try {
       const saleTemp = await prisma.saleTemp.findMany({
@@ -113,7 +98,6 @@ module.exports = {
 
       for (let i = 0; i < saleTemp.length; i++) {
         const item = saleTemp[i];
-        // ลบรายละเอียดของ saleTemp ทุกตัว
         await prisma.saleTempDetail.deleteMany({
           where: {
             saleTempId: item.id,
@@ -121,7 +105,6 @@ module.exports = {
         });
       }
 
-      // ลบ saleTemp ทั้งหมด
       await prisma.saleTemp.deleteMany({
         where: {
           userId: req.body.userId,
@@ -134,7 +117,6 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  // ฟังก์ชันอัพเดทจำนวนของ saleTemp
   updateQty: async (req, res) => {
     try {
       await prisma.saleTemp.update({
@@ -151,7 +133,6 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  // ฟังก์ชันสร้างรายละเอียดของ saleTemp หากยังไม่มี
   generateSaleTempDetail: async (req, res) => {
     try {
       const saleTemp = await prisma.saleTemp.findFirst({
@@ -163,7 +144,7 @@ module.exports = {
         },
       });
 
-      // ถ้าไม่มี SaleTempDetails ให้สร้างใหม่
+      // if saleTempDetails is empty then generate saleTempDetail
       if (saleTemp.SaleTempDetails.length === 0) {
         for (let i = 0; i < saleTemp.qty; i++) {
           await prisma.saleTempDetail.create({
@@ -180,7 +161,6 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  // ฟังก์ชันดึงข้อมูล saleTemp โดย id
   info: async (req, res) => {
     try {
       const saleTemp = await prisma.saleTemp.findFirst({
@@ -226,7 +206,6 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  // ฟังก์ชันเลือกรสชาติสำหรับ saleTempDetail
   selectTaste: async (req, res) => {
     try {
       await prisma.saleTempDetail.update({
@@ -243,7 +222,6 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  // ฟังก์ชันยกเลิกการเลือก รสชาติ
   unselectTaste: async (req, res) => {
     try {
       await prisma.saleTempDetail.update({
@@ -260,7 +238,6 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  // ฟังก์ชันเลือกขนาดสำหรับ saleTempDetail
   selectSize: async (req, res) => {
     try {
       await prisma.saleTempDetail.update({
@@ -277,7 +254,6 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  // ฟังก์ชันยกเลิกการเลือกขนาด
   unselectSize: async (req, res) => {
     try {
       await prisma.saleTempDetail.update({
@@ -294,7 +270,6 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  // ฟังก์ชันสร้าง saleTempDetail ใหม่
   createSaleTempDetail: async (req, res) => {
     try {
       const saleTempId = req.body.saleTempId;
@@ -318,7 +293,6 @@ module.exports = {
         },
       });
 
-      // อัพเดทจำนวนใน saleTemp
       await prisma.saleTemp.update({
         where: {
           id: saleTempId,
@@ -333,7 +307,6 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  // ฟังก์ชันลบ saleTempDetail
   removeSaleTempDetail: async (req, res) => {
     try {
       const saleTempDetailId = req.body.saleTempDetailId;
@@ -343,14 +316,12 @@ module.exports = {
         },
       });
 
-      // ลบ saleTempDetail
       await prisma.saleTempDetail.delete({
         where: {
           id: saleTempDetailId,
         },
       });
 
-      // อัพเดทจำนวนใน saleTemp
       const countSaleTempDetail = await prisma.saleTempDetail.count({
         where: {
           saleTempId: saleTempDetail.saleTempId,
@@ -367,6 +338,355 @@ module.exports = {
       });
 
       return res.send({ message: "success" });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
+  },
+  printBillBeforePay: async (req, res) => {
+    try {
+      // organization
+      const organization = await prisma.organization.findFirst();
+
+      // rows in saleTemps
+      const saleTemps = await prisma.saleTemp.findMany({
+        include: {
+          Food: true,
+          SaleTempDetails: true,
+        },
+        where: {
+          userId: req.body.userId,
+          tableNo: req.body.tableNo,
+        },
+      });
+
+      // create bill by pkfkit
+      const pdfkit = require("pdfkit");
+      const fs = require("fs");
+      const dayjs = require("dayjs");
+
+      const paperWidth = 80;
+      const padding = 3;
+
+      const doc = new pdfkit({
+        size: [paperWidth, 200],
+        margins: {
+          top: 3,
+          bottom: 3,
+          left: 3,
+          right: 3,
+        },
+      });
+      const fileName = `uploads/bill-${dayjs(new Date()).format(
+        "YYYYMMDDHHmmss"
+      )}.pdf`;
+      const font = "Kanit/kanit-regular.ttf";
+
+      doc.pipe(fs.createWriteStream(fileName));
+
+      // display logo
+      const imageWidth = 20;
+      const positionX = paperWidth / 2 - imageWidth / 2;
+      doc.image("uploads/" + organization.logo, positionX, 5, {
+        align: "center",
+        width: imageWidth,
+        height: 20,
+      });
+      doc.moveDown();
+
+      doc.font(font);
+      doc.fontSize(5).text("*** ใบแจ้งรายการ ***", 20, doc.y + 8);
+      doc.fontSize(8);
+      doc.text(organization.name, padding, doc.y);
+      doc.fontSize(5);
+      doc.text(organization.address);
+      doc.text(`เบอร์โทร: ${organization.phone}`);
+      doc.text(`เลขประจำตัวผู้เสียภาษี: ${organization.taxCode}`);
+      doc.text(`โต๊ะ: ${req.body.tableNo}`, { align: "center" });
+      doc.text(`วันที่: ${dayjs(new Date()).format("DD/MM/YYYY HH:mm:ss")}`, {
+        align: "center",
+      });
+      doc.text("รายการอาหาร", { align: "center" });
+      doc.moveDown();
+
+      const y = doc.y;
+      doc.fontSize(4);
+      doc.text("รายการ", padding, y);
+      doc.text("ราคา", padding + 18, y, { align: "right", width: 20 });
+      doc.text("จำนวน", padding + 36, y, { align: "right", width: 20 });
+      doc.text("รวม", padding + 55, y, { align: "right" });
+
+      // line
+      // set border height
+      doc.lineWidth(0.1);
+      doc
+        .moveTo(padding, y + 6)
+        .lineTo(paperWidth - padding, y + 6)
+        .stroke();
+
+      // loop saleTemps
+      saleTemps.map((item, index) => {
+        const y = doc.y;
+        doc.text(item.Food.name, padding, y);
+        doc.text(item.Food.price, padding + 18, y, {
+          align: "right",
+          width: 20,
+        });
+        doc.text(item.qty, padding + 36, y, { align: "right", width: 20 });
+        doc.text(item.Food.price * item.qty, padding + 55, y, {
+          align: "right",
+        });
+      });
+
+      // sum amount
+      let sumAmount = 0;
+      saleTemps.forEach((item) => {
+        sumAmount += item.Food.price * item.qty;
+      });
+
+      // display amount
+      doc.text(`รวม: ${sumAmount.toLocaleString("th-TH")} บาท`, {
+        align: "right",
+      });
+      doc.end();
+
+      return res.send({ message: "success", fileName: fileName });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
+  },
+  endSale: async (req, res) => {
+    try {
+      const saleTemps = await prisma.saleTemp.findMany({
+        include: {
+          SaleTempDetails: {
+            include: {
+              Food: true,
+              FoodSize: true,
+            },
+          },
+          Food: true,
+        },
+        where: {
+          userId: req.body.userId,
+        },
+      });
+
+      const billSale = await prisma.billSale.create({
+        data: {
+          amount: req.body.amount,
+          inputMoney: req.body.inputMoney,
+          payType: req.body.payType,
+          tableNo: req.body.tableNo,
+          userId: req.body.userId,
+          returnMoney: req.body.returnMoney,
+        },
+      });
+
+      for (let i = 0; i < saleTemps.length; i++) {
+        const item = saleTemps[i];
+
+        if (item.SaleTempDetails.length > 0) {
+          // have details
+          for (let j = 0; j < item.SaleTempDetails.length; j++) {
+            const detail = item.SaleTempDetails[j];
+            await prisma.billSaleDetail.create({
+              data: {
+                billSaleId: billSale.id,
+                foodId: detail.foodId,
+                price: detail.Food.price,
+                moneyAdded: detail.FoodSize?.moneyAdded,
+                tasteId: detail.tasteId,
+                foodSizeId: detail.foodSizeId,
+              },
+            });
+          }
+        } else {
+          if (item.qty > 0) {
+            // qty > 0
+            for (let j = 0; j < item.qty; j++) {
+              await prisma.billSaleDetail.create({
+                data: {
+                  billSaleId: billSale.id,
+                  foodId: item.foodId,
+                  price: item.Food.price,
+                },
+              });
+            }
+          } else {
+            // qty = 0
+            await prisma.billSaleDetail.create({
+              data: {
+                billSaleId: billSale.id,
+                foodId: item.foodId,
+                price: item.Food.price,
+              },
+            });
+          }
+        }
+      }
+
+      //
+      // clear sale temp and detail
+      //
+      for (let i = 0; i < saleTemps.length; i++) {
+        const item = saleTemps[i];
+        await prisma.saleTempDetail.deleteMany({
+          where: {
+            saleTempId: item.id,
+          },
+        });
+      }
+
+      // delete saleTemp
+      await prisma.saleTemp.deleteMany({
+        where: {
+          userId: req.body.userId,
+        },
+      });
+
+      return res.send({ message: "success" });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
+  },
+  printBillAfterPay: async (req, res) => {
+    try {
+      // organization
+      const organization = await prisma.organization.findFirst();
+
+      // rows in saleTemps
+      const billSale = await prisma.billSale.findFirst({
+        include: {
+          BillSaleDetails: {
+            include: {
+              Food: true,
+              FoodSize: true,
+            },
+          },
+          User: true,
+        },
+        where: {
+          userId: req.body.userId,
+          tableNo: req.body.tableNo,
+          status: "use",
+        },
+        orderBy: {
+          id: "desc",
+        },
+      });
+
+      const billSaleDetails = billSale.BillSaleDetails;
+
+      // create bill by pkfkit
+      const pdfkit = require("pdfkit");
+      const fs = require("fs");
+      const dayjs = require("dayjs");
+
+      const paperWidth = 80;
+      const padding = 3;
+
+      const doc = new pdfkit({
+        size: [paperWidth, 200],
+        margins: {
+          top: 3,
+          bottom: 3,
+          left: 3,
+          right: 3,
+        },
+      });
+      const fileName = `uploads/invoice-${dayjs(new Date()).format(
+        "YYYYMMDDHHmmss"
+      )}.pdf`;
+      const font = "Kanit/kanit-regular.ttf";
+
+      doc.pipe(fs.createWriteStream(fileName));
+
+      // display logo
+      const imageWidth = 20;
+      const positionX = paperWidth / 2 - imageWidth / 2;
+      doc.image("uploads/" + organization.logo, positionX, 5, {
+        align: "center",
+        width: imageWidth,
+        height: 20,
+      });
+      doc.moveDown();
+
+      doc.font(font);
+      doc.fontSize(5).text("*** ใบเสร็จรับเงิน ***", 20, doc.y + 8);
+      doc.fontSize(8);
+      doc.text(organization.name, padding, doc.y);
+      doc.fontSize(5);
+      doc.text(organization.address);
+      doc.text(`เบอร์โทร: ${organization.phone}`);
+      doc.text(`เลขประจำตัวผู้เสียภาษี: ${organization.taxCode}`);
+      doc.text(`โต๊ะ: ${req.body.tableNo}`, { align: "center" });
+      doc.text(`วันที่: ${dayjs(new Date()).format("DD/MM/YYYY HH:mm:ss")}`, {
+        align: "center",
+      });
+      doc.text("รายการอาหาร", { align: "center" });
+      doc.moveDown();
+
+      const y = doc.y;
+      doc.fontSize(4);
+      doc.text("รายการ", padding, y);
+      doc.text("ราคา", padding + 18, y, { align: "right", width: 20 });
+      doc.text("จำนวน", padding + 36, y, { align: "right", width: 20 });
+      doc.text("รวม", padding + 55, y, { align: "right" });
+
+      // line
+      // set border height
+      doc.lineWidth(0.1);
+      doc
+        .moveTo(padding, y + 6)
+        .lineTo(paperWidth - padding, y + 6)
+        .stroke();
+
+      // loop saleTemps
+      billSaleDetails.map((item, index) => {
+        const y = doc.y;
+        let name = item.Food.name;
+        if (item.foodSizeId != null)
+          name += ` (${item.FoodSize.name}) +${item.FoodSize.moneyAdded}`;
+
+        doc.text(name, padding, y);
+        doc.text(item.Food.price, padding + 18, y, {
+          align: "right",
+          width: 20,
+        });
+        doc.text(1, padding + 36, y, { align: "right", width: 20 });
+        doc.text(item.Food.price + item.moneyAdded, padding + 55, y, {
+          align: "right",
+        });
+      });
+
+      // sum amount
+      let sumAmount = 0;
+      billSaleDetails.forEach((item) => {
+        sumAmount += item.Food.price + item.moneyAdded;
+      });
+
+      // display amount
+      doc.text(
+        `รวม: ${sumAmount.toLocaleString("th-TH")} บาท`,
+        padding,
+        doc.y,
+        { align: "right", width: paperWidth - padding - padding }
+      );
+      doc.text(
+        "รับเงิน " + billSale.inputMoney.toLocaleString("th-TH") + " บาท",
+        padding,
+        doc.y,
+        { align: "right", width: paperWidth - padding - padding }
+      );
+      doc.text(
+        "เงินทอน " + billSale.returnMoney.toLocaleString("th-TH") + " บาท",
+        padding,
+        doc.y,
+        { align: "right", width: paperWidth - padding - padding }
+      );
+      doc.end();
+
+      return res.send({ message: "success", fileName: fileName });
     } catch (e) {
       return res.status(500).send({ error: e.message });
     }
