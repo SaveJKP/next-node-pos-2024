@@ -70,13 +70,13 @@ export default function Page() {
     try {
       const img = await handleUpload();
       const payload = {
+        id: id,
         foodTypeId: foodTypeId,
+        foodType: foodType,
+        img: img,
         name: name,
         remark: remark,
         price: price,
-        img: img,
-        id: id,
-        foodType: foodType,
       };
 
       if (id == 0) {
@@ -106,33 +106,23 @@ export default function Page() {
 
   const handleUpload = async () => {
     try {
-      // สร้างตัวแปร formData เพื่อใช้ในการส่งข้อมูลแบบ multipart/form-data
       const formData = new FormData();
-
-      // เพิ่มไฟล์ที่เลือกใน input file ลงไปใน formData
-      // myFile เป็นไฟล์ที่ผู้ใช้เลือกในฟอร์ม ซึ่งจะถูกแปลงเป็น Blob
       formData.append("myFile", myFile as Blob);
 
-      // ส่งคำขอ POST ไปยัง API เพื่ออัพโหลดไฟล์
-      // ใช้ axios ในการส่งคำขอไปยัง endpoint '/api/food/upload'
       const res = await axios.post(
         config.apiServer + "/api/food/upload",
         formData
       );
-
-      // เมื่ออัพโหลดสำเร็จ จะได้รับชื่อไฟล์ใหม่จาก API ที่ส่งกลับมา
-      // ส่งคืนชื่อไฟล์ใหม่ที่ถูกอัพโหลด
       return res.data.fileName;
     } catch (e: any) {
-      // ถ้ามีข้อผิดพลาดในการอัพโหลดไฟล์ เช่น การเชื่อมต่อไม่สำเร็จ
-      // จะใช้ Swal.fire เพื่อแสดงข้อความแจ้งเตือนแบบ Error
       Swal.fire({
         icon: "error",
         title: "error",
-        text: e.message, // ข้อความจากข้อผิดพลาดที่ได้รับ
+        text: e.message,
       });
     }
   };
+  
 
   const getFoodTypeName = (foodType: string): string => {
     if (foodType == "food") {
@@ -183,7 +173,7 @@ export default function Page() {
     setPrice(0);
     setFoodType("food");
     setImg("");
-    (document.getElementById('myFile') as HTMLInputElement).value = '';
+    // (document.getElementById('myFile') as HTMLInputElement).value = '';
     openModal();
   };
 

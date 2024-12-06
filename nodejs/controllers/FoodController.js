@@ -6,37 +6,41 @@ module.exports = {
   upload: async (req, res) => {
     try {
       // ตรวจสอบว่าไฟล์ถูกส่งมาหรือไม่
-      if (req.files != undefined) {
-        const myFile = req.files.myFile; // เก็บไฟล์ที่อัปโหลดจากฟอร์ม (ชื่อไฟล์เป็น 'myFile')
-
-        // ชื่อไฟล์เดิมที่อัปโหลด
-        const fileName = myFile.name;
-
-        // แยกนามสกุลไฟล์และสร้างชื่อไฟล์ใหม่
-        const fileExtension = fileName.split(".").pop(); // ใช้ .split() เพื่อแยกชื่อไฟล์กับนามสกุล
-        const newFileName = new Date().getTime() + "." + fileExtension; // สร้างชื่อไฟล์ใหม่โดยใช้เวลาปัจจุบัน (timestamp)
-        const path = "uploads/" + newFileName; // กำหนดเส้นทางที่จะบันทึกไฟล์
-
-        // บันทึกไฟล์ไปยังโฟลเดอร์ 'uploads'
-        myFile.mv(path, async (err) => {
-          // ใช้ .mv() เพื่อย้ายไฟล์ไปยังที่อยู่ใหม่
-          if (err) {
-            // ถ้ามีข้อผิดพลาดในการย้ายไฟล์
-            return res.status(500).send({ error: err.message }); // ส่งข้อผิดพลาดกลับไป
-          }
-
-          // ถ้าย้ายไฟล์สำเร็จ ส่งข้อความตอบกลับที่มีชื่อไฟล์ใหม่
-          return res.send({ message: "success", fileName: newFileName });
-        });
-      } else {
-        // ถ้าไม่พบไฟล์ในคำขอ ส่งข้อผิดพลาดว่าไม่มีไฟล์อัปโหลด
-        return res.status(500).send({ error: "No file uploaded" });
+      if (!req.files || !req.files.myFile) {
+        return res.status(400).send({ error: "No file uploaded" });
       }
+  
+      const myFile = req.files.myFile; // ดึงไฟล์จากคำขอ
+      const allowedExtensions = ["jpg", "jpeg", "png", "gif", "pdf"]; // ประเภทไฟล์ที่อนุญาต
+      const maxFileSize = 5 * 1024 * 1024; // ขนาดไฟล์สูงสุด 5MB
+  
+      // ตรวจสอบประเภทไฟล์
+      const fileExtension = myFile.name.split(".").pop().toLowerCase();
+      if (!allowedExtensions.includes(fileExtension)) {
+        return res.status(400).send({ error: "Invalid file type" });
+      }
+  
+      // ตรวจสอบขนาดไฟล์
+      if (myFile.size > maxFileSize) {
+        return res.status(400).send({ error: "File size exceeds limit" });
+      }
+  
+      const newFileName = `${Date.now()}.${fileExtension}`; // สร้างชื่อไฟล์ใหม่
+      const uploadPath = `uploads/${newFileName}`; // ระบุที่จัดเก็บ
+  
+      // ย้ายไฟล์
+      myFile.mv(uploadPath, (err) => {
+        if (err) {
+          return res.status(500).send({ error: "File upload failed", details: err.message });
+        }
+        return res.send({ message: "success", fileName: newFileName });
+      });
     } catch (e) {
-      // ถ้ามีข้อผิดพลาดใดๆ ในการประมวลผล ฟังก์ชันนี้จะจับข้อผิดพลาดนั้นและส่งกลับเป็นข้อผิดพลาด 500
       return res.status(500).send({ error: e.message });
     }
   },
+  
+
   create: async (req, res) => {
     try {
       await prisma.food.create({

@@ -25,7 +25,7 @@ export default function Page() {
   // ใช้ useEffect เพื่อเรียกฟังก์ชัน fetchData และ fetchDataFoodSize เมื่อ component ถูกโหลดครั้งแรก
   useEffect(() => {
     fetchData(); // ดึงข้อมูลขนาดอาหาร
-    fetchDataFoodSize(); // ดึงข้อมูลประเภทอาหาร
+    fetchDataFoodType(); // ดึงข้อมูลประเภทอาหาร
   }, []); // [] คือ dependency array ซึ่งหมายความว่า useEffect จะทำงานเพียงครั้งเดียวเมื่อ component ถูก mount
 
   // ฟังก์ชันดึงข้อมูลขนาดอาหารจาก API
@@ -44,7 +44,7 @@ export default function Page() {
   };
 
   // ฟังก์ชันดึงข้อมูลประเภทอาหารจาก API
-  const fetchDataFoodSize = async () => {
+  const fetchDataFoodType = async () => {
     try {
       const res = await axios.get(config.apiServer + "/api/foodType/list"); // ส่ง GET request ไปที่ API
       if (res.data.results.length > 0) {
