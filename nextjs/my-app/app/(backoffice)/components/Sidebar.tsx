@@ -80,11 +80,21 @@ export default function Sidebar() {
             src="https://cdn.pixabay.com/photo/2023/08/30/22/59/chicken-8224162_1280.jpg"
             alt=""
           />
+          {userLevel === "admin" && (
+            <Link href="/user" className="text-blue-500">
+              {name}
+            </Link>
+          )}
+          {userLevel === "user" && (
+            <Link href="#" className="text-blue-500">
+              {name}
+            </Link>
+          )}
 
-          <a href="#" className="text-blue-500">
-            {name}
-          </a>
-          <button className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded" onClick={signOut}>
+          <button
+            className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
+            onClick={signOut}
+          >
             <i className="fa fa-times mr-2"></i>ออกจากระบบ
           </button>
         </header>
@@ -150,28 +160,19 @@ export default function Sidebar() {
                   </Link>
                 </li>
                 <li className="">
-                  <Link
-                    href="/report-bill-sale"
-                    className=""
-                  >
+                  <Link href="/report-bill-sale" className="">
                     <i className="nav-icon fas fa-file-alt mr-2"></i>
                     รายงานการขาย
                   </Link>
                 </li>
                 <li className="">
-                  <Link
-                    href="/report-sum-sale-per-day"
-                    className=""
-                  >
+                  <Link href="/report-sum-sale-per-day" className="">
                     <i className="nav-icon fas fa-calendar mr-2"></i>
                     สรุปยอดขายรายวัน
                   </Link>
                 </li>
                 <li className="">
-                  <Link
-                    href="/report-sum-sale-per-month"
-                    className=""
-                  >
+                  <Link href="/report-sum-sale-per-month" className="">
                     <i className="nav-icon fas fa-calendar mr-2"></i>
                     สรุปยอดขายรายเดือน
                   </Link>

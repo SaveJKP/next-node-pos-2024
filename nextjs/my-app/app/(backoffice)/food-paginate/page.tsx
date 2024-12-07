@@ -10,17 +10,33 @@ export default function FoodPaginate() {
   const [totalPage, setTotalPage] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(2);
+  const [itemsPerPage, setItemsPerPage] = useState(0);
 
   useEffect(() => {
-    fetchData();
+    calculateItemsPerPage();
+    window.addEventListener("resize", calculateItemsPerPage);
+    return () => {
+      window.removeEventListener("resize", calculateItemsPerPage);
+    };
   }, []);
+
+  useEffect(() => {
+    fetchData(currentPage);
+  }, [itemsPerPage]);
+
+  const calculateItemsPerPage = () => {
+    // สมมติว่าความสูงเฉลี่ยของแถวคือ 50px และมี padding/dynamic ส่วนบนล่าง 150px
+    const rowHeight = 50;
+    const availableHeight = window.innerHeight - 150;
+    const items = Math.floor(availableHeight / rowHeight);
+    setItemsPerPage(items);
+  };
 
   const fetchData = async (page: number = 1) => {
     try {
       const payload = {
-        page: page,
-        itemsPerPage: itemsPerPage,
+        page,
+        itemsPerPage,
       };
 
       const headers = {
@@ -82,13 +98,13 @@ export default function FoodPaginate() {
             ))}
           </tbody>
         </table>
-  
+
         <div className="mt-4">
           <div className="text-sm text-gray-600">
             จำนวนรายการ: {totalItems} | จำนวนหน้า: {totalPage}
           </div>
         </div>
-  
+
         <div className="mt-4 flex flex-wrap justify-center items-center space-x-2">
           <button
             disabled={currentPage === 1}
@@ -144,5 +160,4 @@ export default function FoodPaginate() {
       </div>
     </div>
   );
-  
 }

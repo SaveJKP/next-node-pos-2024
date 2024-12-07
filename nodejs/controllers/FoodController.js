@@ -6,32 +6,34 @@ module.exports = {
   upload: async (req, res) => {
     try {
       // ตรวจสอบว่าไฟล์ถูกส่งมาหรือไม่
-      if (!req.files || !req.files.myFile) {
+      if (!req.files ) {
         return res.status(400).send({ error: "No file uploaded" });
       }
-  
+
       const myFile = req.files.myFile; // ดึงไฟล์จากคำขอ
       const allowedExtensions = ["jpg", "jpeg", "png", "gif", "pdf"]; // ประเภทไฟล์ที่อนุญาต
       const maxFileSize = 5 * 1024 * 1024; // ขนาดไฟล์สูงสุด 5MB
-  
+
       // ตรวจสอบประเภทไฟล์
       const fileExtension = myFile.name.split(".").pop().toLowerCase();
       if (!allowedExtensions.includes(fileExtension)) {
         return res.status(400).send({ error: "Invalid file type" });
       }
-  
+
       // ตรวจสอบขนาดไฟล์
       if (myFile.size > maxFileSize) {
         return res.status(400).send({ error: "File size exceeds limit" });
       }
-  
-      const newFileName = `${Date.now()}.${fileExtension}`; // สร้างชื่อไฟล์ใหม่
+
+      const newFileName = myFile.name; //`${Date.now()}.${fileExtension}`; // สร้างชื่อไฟล์ใหม่
       const uploadPath = `uploads/${newFileName}`; // ระบุที่จัดเก็บ
-  
+
       // ย้ายไฟล์
       myFile.mv(uploadPath, (err) => {
         if (err) {
-          return res.status(500).send({ error: "File upload failed", details: err.message });
+          return res
+            .status(500)
+            .send({ error: "File upload failed", details: err.message });
         }
         return res.send({ message: "success", fileName: newFileName });
       });
@@ -39,7 +41,6 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  
 
   create: async (req, res) => {
     try {
@@ -80,6 +81,27 @@ module.exports = {
   },
   remove: async (req, res) => {
     try {
+      // ดึงข้อมูลอาหารที่ต้องการลบ เพื่อเข้าถึงชื่อไฟล์ภาพ
+      const food = await prisma.food.findUnique({
+        where: {
+          id: parseInt(req.params.id),
+        },
+      });
+
+      if (!food) {
+        return res.status(404).send({ error: "Food not found" });
+      }
+
+      // ลบไฟล์ภาพในโฟลเดอร์ uploads (ถ้ามีภาพ)
+      if (food.img && food.img !== "") {
+        const fs = require("fs");
+        const filePath = `uploads/${food.img}`;
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath); // ลบไฟล์ภาพ
+        }
+      }
+
+      // อัปเดตสถานะของอาหารเป็น 'delete'
       await prisma.food.update({
         data: {
           status: "delete",
@@ -88,12 +110,24 @@ module.exports = {
           id: parseInt(req.params.id),
         },
       });
+      await prisma.saleTempDetail.deleteMany({
+        where: {
+          foodId: parseInt(req.params.id),
+        },
+      });
+      // ลบข้อมูลที่เกี่ยวข้องใน saleTemp และ saleTempDetail
+      await prisma.saleTemp.deleteMany({
+        where: {
+          foodId: parseInt(req.params.id),
+        },
+      });
 
       return res.send({ message: "success" });
     } catch (e) {
       return res.status(500).send({ error: e.message });
     }
   },
+
   update: async (req, res) => {
     try {
       // ลบไฟล์เก่าในรายการอาหาร

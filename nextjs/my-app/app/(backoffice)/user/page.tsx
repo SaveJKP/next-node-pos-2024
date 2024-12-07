@@ -133,11 +133,11 @@ export default function Page() {
   
       <table className="min-w-full table-auto mt-4 border-collapse">
         <thead>
-          <tr className="bg-gray-100 text-left">
+          <tr className="bg-gray-100 text-center">
             <th className="px-4 py-2 border">ชื่อ</th>
             <th className="px-4 py-2 border">username</th>
             <th className="px-4 py-2 border">ระดับผู้ใช้งาน</th>
-            <th className="px-4 py-2 border" style={{ width: "110px" }}></th>
+            <th className="px-4 py-2 border w-28"></th>
           </tr>
         </thead>
         <tbody>
@@ -146,24 +146,26 @@ export default function Page() {
               <td className="px-4 py-2 border">{user.name}</td>
               <td className="px-4 py-2 border">{user.username}</td>
               <td className="px-4 py-2 border">{user.level}</td>
-              <td className="px-4 py-2 border text-center">
+              <td className="px-4 py-2 border  ">
+              <div className="w-full h-full flex justify-center items-center space-x-2">
                 {currentUserId !== user.id ? (
                   <>
                     <button
-                      className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md"
                     
                       onClick={() => handleEdit(user.id)}
                     >
                       <i className="fa fa-edit"></i>
                     </button>
                     <button
-                      className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
                       onClick={() => handleDelete(user.id)}
                     >
                       <i className="fa fa-trash"></i>
                     </button>
                   </>
                 ) : null}
+              </div>
               </td>
             </tr>
           ))}

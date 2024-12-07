@@ -16,11 +16,9 @@ export default function Page() {
   const [id, setId] = useState(0); // เก็บ id สำหรับใช้ในการแก้ไขข้อมูล
   const [isOpen, setIsOpen] = useState(false);
 
-  // ฟังก์ชันสำหรับปิด Modal
   const closeModal = () => setIsOpen(false);
-
-  // ฟังก์ชันสำหรับเปิด Modal
   const openModal = () => setIsOpen(true);
+  
   // useEffect เพื่อดึงข้อมูลจาก API เมื่อ component ถูกโหลด
   useEffect(() => {
     fetchData(); // ดึงข้อมูลรสชาติอาหาร

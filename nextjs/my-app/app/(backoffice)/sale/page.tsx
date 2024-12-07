@@ -465,9 +465,8 @@ export default function Page() {
           ขายสินค้า
         </div>
         <div className="p-4 bg-white">
-          <div className="flex flex-wrap gap-4">
-            <div className=" flex justify-center items-center">
-              <label className="h-10 w-full  px-2 pt-2 rounded-l-md">
+          <div className="flex flex-wrap gap-3  items-center w-full">
+              <label className="h-10   px-2 pt-2 rounded-l-md">
                 Table No.
               </label>
               <input
@@ -476,9 +475,8 @@ export default function Page() {
                 className=" px-4 py-2 border border-gray-300 rounded-md"
                 value={table}
                 onChange={(e) => setTable(Number(e.target.value))}
+                disabled = {saleTemps.length > 0 }
               />
-            </div>
-            <div className="flex-1 flex gap-2">
               <button
                 className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center"
                 onClick={() => filterFoods("food")}
@@ -520,15 +518,14 @@ export default function Page() {
                   พิมพ์ใบแจ้งรายการ
                 </button>
               )}
-            </div>
           </div>
 
           <div className="flex flex-wrap mt-4 gap-4">
             {/* แมพอาหารมาแสดง */}
-            <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 h-72">
               {foods.map((food: any) => (
                 <div
-                  className="bg-white shadow-md rounded-md overflow-hidden h-72"
+                  className="bg-white shadow-md rounded-md overflow-hidden h-72" 
                   key={food.id}
                 >
                   <img
@@ -547,7 +544,7 @@ export default function Page() {
               ))}
             </div>
 
-            <div className="w-full md:w-1/4">
+            <div className="w-full md:w-1/5">
               <div className="bg-gray-800 text-white text-end text-2xl p-4 rounded-md">
                 {(amount + amountAdded).toLocaleString("th-TH")} .-
               </div>
@@ -657,8 +654,10 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {saleTempDetails.map((item: any) => (
-                <tr key={item.id}>
+              {saleTempDetails.map((item: any, index: number) => (
+                <tr key={item.id} className={`${
+                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                } border-b`}>
                   <td className="text-center border border-gray-300">
                     <button
                       onClick={() => removeSaleTempDetail(item.id)}

@@ -108,6 +108,15 @@ module.exports = {
         },
       });
 
+      prisma.billSale.updateMany({
+        where: {
+          userId: parseInt(req.params.id), // ระบุ id ของผู้ใช้ที่จะลบ
+        },
+        data: {
+          status: "delete", // เปลี่ยนสถานะเป็น 'ลบ'
+        },
+      })
+
       return res.send({ message: "success" }); // ส่งข้อความสำเร็จกลับไป
     } catch (e) {
       return res.status(500).send({ error: e.message }); // ส่งข้อความผิดพลาดกลับไป

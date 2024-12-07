@@ -104,7 +104,7 @@ export default function ReportSumSalePerDay() {
         </div>
         <div className="flex items-end">
           <button
-            className="w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
             onClick={fetchData}
           >
             <i className="fa fa-search mr-2"></i>

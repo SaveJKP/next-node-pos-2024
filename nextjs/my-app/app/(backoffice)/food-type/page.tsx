@@ -13,10 +13,7 @@ export default function Page() {
   const [id, setId] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
-  // ฟังก์ชันสำหรับปิด Modal
   const closeModal = () => setIsOpen(false);
-
-  // ฟังก์ชันสำหรับเปิด Modal
   const openModal = () => setIsOpen(true);
 
   useEffect(() => {
@@ -83,6 +80,7 @@ export default function Page() {
       });
 
       if (button.isConfirmed) {
+        
         await axios.delete(
           config.apiServer + "/api/foodType/remove/" + item.id
         );

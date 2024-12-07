@@ -162,7 +162,7 @@ export default function Page() {
     setRemark(item.remark);
     setPrice(item.price);
     setFoodType(item.foodType);
-    setImg(item.img);
+    setImg("");
     openModal();
   };
 
