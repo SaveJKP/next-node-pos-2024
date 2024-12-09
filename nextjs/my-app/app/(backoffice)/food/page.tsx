@@ -47,9 +47,10 @@ export default function Page() {
     }
   };
 
-  const handleSelectedFile = (e: any) => {
-    if (e.target.files.length > 0) {
-      setMyFile(e.target.files[0]);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null; // เลือกไฟล์แรก
+    if (file) {
+      setMyFile(file); // เก็บไฟล์
     }
   };
 
@@ -70,13 +71,13 @@ export default function Page() {
     try {
       const img = await handleUpload();
       const payload = {
-        id: id,
         foodTypeId: foodTypeId,
-        foodType: foodType,
-        img: img,
         name: name,
         remark: remark,
         price: price,
+        img: img,
+        id: id,
+        foodType: foodType,
       };
 
       if (id == 0) {
@@ -94,7 +95,7 @@ export default function Page() {
       });
 
       fetchData();
-      closeModal();
+      document.getElementById("modalFood_btnClose")?.click();
     } catch (e: any) {
       Swal.fire({
         icon: "error",
@@ -122,7 +123,6 @@ export default function Page() {
       });
     }
   };
-  
 
   const getFoodTypeName = (foodType: string): string => {
     if (foodType == "food") {
@@ -173,7 +173,6 @@ export default function Page() {
     setPrice(0);
     setFoodType("food");
     setImg("");
-    // (document.getElementById('myFile') as HTMLInputElement).value = '';
     openModal();
   };
 
@@ -207,9 +206,12 @@ export default function Page() {
             </thead>
             <tbody>
               {foods.map((item: any, index: number) => (
-                <tr key={item.id} className={`${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                } border-b`}>
+                <tr
+                  key={item.id}
+                  className={`${
+                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  } border-b`}
+                >
                   <td className="p-2 border border-gray-300">
                     <img
                       src={config.apiServer + "/uploads/" + item.img}
@@ -278,7 +280,9 @@ export default function Page() {
             type="file"
             id="myFile"
             className="w-full p-2 border border-gray-300 rounded-md"
-            onChange={(e) => handleSelectedFile(e)}
+            onChange={(e) => {
+              handleFileChange(e);
+            }}
           />
 
           <div className="mt-3">ชื่ออาหาร</div>
@@ -334,11 +338,14 @@ export default function Page() {
           <div className=" border-gray-300 mt-4 flex justify-end space-x-3">
             <button
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-              onClick={save}
+              onClick={() => {
+                save();
+                closeModal();
+              }}
+              disabled={!myFile}
             >
               บันทึก
             </button>
-          
           </div>
         </MyModal>
       )}

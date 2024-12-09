@@ -18,7 +18,7 @@ export default function Page() {
 
   const closeModal = () => setIsOpen(false);
   const openModal = () => setIsOpen(true);
-  
+
   // useEffect เพื่อดึงข้อมูลจาก API เมื่อ component ถูกโหลด
   useEffect(() => {
     fetchData(); // ดึงข้อมูลรสชาติอาหาร
@@ -153,24 +153,23 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {tastes.map((item: any , index: number) => (
-                <tr key={item.id} className={`${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                } border-b`}>
+              {tastes.map((item: any, index: number) => (
+                <tr
+                  key={item.id}
+                  className={`${
+                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  } border-b`}
+                >
                   <td className="p-2 border border-gray-300">
                     {item.FoodType.name}
-                  </td>{" "}
+                  </td>
                   {/* แสดงชื่อประเภทอาหาร */}
-                  <td className="p-2 border border-gray-300">
-                    {item.name}
-                  </td>{" "}
+                  <td className="p-2 border border-gray-300">{item.name}</td>
                   {/* แสดงชื่อรสชาติอาหาร */}
-                  <td className="p-2 border border-gray-300">
-                    {item.remark}
-                  </td>{" "}
+                  <td className="p-2 border border-gray-300">{item.remark}</td>
                   {/* แสดงหมายเหตุ */}
                   <td className="p-2 border border-gray-300 ">
-                    <div className="w-full h-full flex space-x-2">
+                    <div className="w-full h-full flex justify-center items-center space-x-2">
                       <button
                         className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md"
                         onClick={() => {
@@ -232,7 +231,6 @@ export default function Page() {
                 >
                   บันทึก
                 </button>
-              
               </div>
             </MyModal>
           )}

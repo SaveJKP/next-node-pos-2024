@@ -6,9 +6,11 @@ import { Chart as ChartJS } from "chart.js/auto";
 import Swal from "sweetalert2";
 import axios from "axios";
 import config from "@/app/config";
+import Head from "next/head";
+
 
 export default function Dashboard() {
-  const [ , setIncomePerDays] = useState<any[]>([]);
+  const [, setIncomePerDays] = useState<any[]>([]);
   const [incomePerMonths, setIncomePerMonths] = useState<any[]>([]);
   const [years, setYears] = useState<number[]>([]);
   const [monthName, setMonthName] = useState<string[]>([
@@ -175,76 +177,78 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-full  border border-gray-200 bg-white rounded-md shadow-md overflow-hidden">
-      <div className="bg-white border-b border-gray-200 text-lg font-bold p-3">
-        Dashboard
-      </div>
-      <div className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              ปี
-            </label>
-            <select
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            >
-              {years.map((item, index) => (
-                <option key={index} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
+    <> 
+        <div className="min-h-full  border border-gray-200 bg-white rounded-md shadow-md overflow-hidden">
+          <div className="bg-white border-b border-gray-200 text-lg font-bold p-3">
+            Dashboard
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              เดือน
-            </label>
-            <select
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              value={month}
-              onChange={(e) => setMonth(parseInt(e.target.value))}
-            >
-              {monthName.map((item, index) => (
-                <option key={index} value={index + 1}>
-                  {item}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex items-end">
-            <button
-              className="w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              onClick={fetchData}
-            >
-              <i className="fa fa-search mr-2" />
-              แสดงข้อมูล
-            </button>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block mb-2 font-semibold">
+                  ปี
+                </label>
+                <select
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                >
+                  {years.map((item, index) => (
+                    <option key={index} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block mb-2 font-semibold">
+                  เดือน
+                </label>
+                <select
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  value={month}
+                  onChange={(e) => setMonth(parseInt(e.target.value))}
+                >
+                  {monthName.map((item, index) => (
+                    <option key={index} value={index + 1}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-end">
+                <button
+                  className="px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+                  onClick={fetchData}
+                >
+                  <i className="fa fa-search mr-2" />
+                  แสดงข้อมูล
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <div>
+                <div className="text-lg font-bold text-gray-800 mb-4">
+                  สรุปยอดขายรายวัน
+                </div>
+                <div className="bg-gray-50 p-4 border border-gray-200 rounded-md shadow-sm">
+                  <canvas id="chartPerDay" height="200" />
+                </div>
+              </div>
+
+              <div>
+                <div className="text-lg font-bold text-gray-800 mb-4">
+                  สรุปยอดขายรายเดือน
+                </div>
+                <div className="bg-gray-50 p-4 border border-gray-200 rounded-md shadow-sm">
+                  <canvas id="chartPerMonth" height="200" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-  
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          <div>
-            <div className="text-lg font-bold text-gray-800 mb-4">
-              สรุปยอดขายรายวัน
-            </div>
-            <div className="bg-gray-50 p-4 border border-gray-200 rounded-md shadow-sm">
-              <canvas id="chartPerDay" height="200" />
-            </div>
-          </div>
-  
-          <div>
-            <div className="text-lg font-bold text-gray-800 mb-4">
-              สรุปยอดขายรายเดือน
-            </div>
-            <div className="bg-gray-50 p-4 border border-gray-200 rounded-md shadow-sm">
-              <canvas id="chartPerMonth" height="200" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+
+    </>
   );
-  
 }

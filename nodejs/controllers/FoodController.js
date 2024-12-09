@@ -5,35 +5,36 @@ module.exports = {
   //ทำการเปลี่ยนชื่อไฟล์ แล้วย้ายไปยังที่อยู่ใหม่ uploads
   upload: async (req, res) => {
     try {
-      // ตรวจสอบว่าไฟล์ถูกส่งมาหรือไม่
-      if (!req.files ) {
+      if (!req.files || !req.files.myFile) {
         return res.status(400).send({ error: "No file uploaded" });
       }
-
-      const myFile = req.files.myFile; // ดึงไฟล์จากคำขอ
-      const allowedExtensions = ["jpg", "jpeg", "png", "gif", "pdf"]; // ประเภทไฟล์ที่อนุญาต
-      const maxFileSize = 5 * 1024 * 1024; // ขนาดไฟล์สูงสุด 5MB
-
-      // ตรวจสอบประเภทไฟล์
+  
+      const myFile = req.files.myFile;
+      const allowedExtensions = ["jpg", "jpeg", "png", "gif", "pdf"];
+      const maxFileSize = 5 * 1024 * 1024;
+  
+      // ตรวจสอบประเภทไฟล์และขนาด
       const fileExtension = myFile.name.split(".").pop().toLowerCase();
       if (!allowedExtensions.includes(fileExtension)) {
         return res.status(400).send({ error: "Invalid file type" });
       }
-
-      // ตรวจสอบขนาดไฟล์
+  
+      if (myFile.size === 0) {
+        return res.status(400).send({ error: "Empty file uploaded" });
+      }
+  
       if (myFile.size > maxFileSize) {
         return res.status(400).send({ error: "File size exceeds limit" });
       }
-
-      const newFileName = myFile.name; //`${Date.now()}.${fileExtension}`; // สร้างชื่อไฟล์ใหม่
-      const uploadPath = `uploads/${newFileName}`; // ระบุที่จัดเก็บ
-
-      // ย้ายไฟล์
+  
+      // ป้องกันชื่อไฟล์ซ้ำ
+      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+      const newFileName = `${uniqueSuffix}-${myFile.name}`;
+      const uploadPath = `uploads/${newFileName}`;
+  
       myFile.mv(uploadPath, (err) => {
         if (err) {
-          return res
-            .status(500)
-            .send({ error: "File upload failed", details: err.message });
+          return res.status(500).send({ error: "File upload failed", details: err.message });
         }
         return res.send({ message: "success", fileName: newFileName });
       });
@@ -41,6 +42,8 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
+  
+  
 
   create: async (req, res) => {
     try {

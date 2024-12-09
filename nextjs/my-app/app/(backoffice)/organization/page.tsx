@@ -63,7 +63,10 @@ const OrganizationPage = () => {
   };
 
   const handleFileChange = (e: any) => {
-    setFileSelected(e.target.files[0]);
+    const file = e.target.files ? e.target.files[0] : null; // เลือกไฟล์แรก
+    if (file) {
+      setFileSelected(file); // เก็บไฟล์
+    } // setFileSelected(e.target.files[0]);
   };
 
   const uploadFile = async () => {
@@ -133,7 +136,7 @@ const OrganizationPage = () => {
         <input
           type="file"
           className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
-          onChange={handleFileChange}
+          onChange={(e) => handleFileChange(e)}
         />
 
         <div className="mt-3 mb-2">เลขประจำตัวผู้เสียภาษี</div>

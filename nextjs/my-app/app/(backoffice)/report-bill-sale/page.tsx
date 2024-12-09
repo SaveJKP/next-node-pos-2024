@@ -133,7 +133,12 @@ export default function Page() {
               <tbody>
                 {billSales.length > 0 &&
                   billSales.map((billSale: any, index: number) => (
-                    <tr key={index}   className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} `}>
+                    <tr
+                      key={index}
+                      className={`${
+                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } `}
+                    >
                       <td className="border px-4 py-2 text-center">
                         <button
                           className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 focus:ring focus:ring-red-300 mr-2"

@@ -385,7 +385,7 @@ export default function Page() {
       setTimeout(() => {
         setBillUrl(res.data.fileName);
 
-      openModalBill();
+        openModalBill();
       }, 500);
     } catch (e: any) {
       Swal.fire({
@@ -460,64 +460,62 @@ export default function Page() {
 
   return (
     <>
-        <div className="min-h-full border border-gray-200 bg-white rounded-md shadow-md overflow-hidden">
+      <div className="min-h-full border border-gray-200 bg-white rounded-md shadow-md overflow-hidden">
         <div className="text-white bg-gray-800 border-b border-gray-200 text-lg font-bold p-3">
           ขายสินค้า
         </div>
         <div className="p-4 bg-white">
           <div className="flex flex-wrap gap-3  items-center w-full">
-              <label className="h-10   px-2 pt-2 rounded-l-md">
-                Table No.
-              </label>
-              <input
-                ref={myRef}
-                type="text"
-                className=" px-4 py-2 border border-gray-300 rounded-md"
-                value={table}
-                onChange={(e) => setTable(Number(e.target.value))}
-                disabled = {saleTemps.length > 0 }
-              />
+            <label className="h-10   px-2 pt-2 rounded-l-md">Table No.</label>
+            <input
+              ref={myRef}
+              type="text"
+              className=" px-4 py-2 border border-gray-300 rounded-md"
+              value={table}
+              onChange={(e) => setTable(Number(e.target.value))}
+              disabled={saleTemps.length > 0}
+            />
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center"
+              onClick={() => filterFoods("food")}
+            >
+              <i className="fa fa-hamburger mr-2"></i>
+              อาหาร
+            </button>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center"
+              onClick={() => filterFoods("drink")}
+            >
+              <i className="fa fa-coffee mr-2"></i>
+              เครื่องดื่ม
+            </button>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center"
+              onClick={() => filterFoods("all")}
+            >
+              <i className="fa fa-list mr-2"></i>
+              ทั้งหมด
+            </button>
+            <button
+              disabled={saleTemps.length === 0}
+              className="bg-red-500 text-white px-4 py-2 rounded-md disabled:opacity-50"
+              onClick={() => removeAllSaleTemp()}
+            >
+              <i className="fa fa-times mr-2"></i>
+              ล้างรายการ
+            </button>
+            {amount > 0 && (
               <button
-                className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center"
-                onClick={() => filterFoods("food")}
+                className="bg-green-500 text-white px-4 py-2 rounded-md"
+                onClick={() => {
+                  openModalBill();
+                  printBillBeforePay();
+                }}
               >
-                <i className="fa fa-hamburger mr-2"></i>
-                อาหาร
+                <i className="fa fa-print mr-2"></i>
+                พิมพ์ใบแจ้งรายการ
               </button>
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center"
-                onClick={() => filterFoods("drink")}
-              >
-                <i className="fa fa-coffee mr-2"></i>
-                เครื่องดื่ม
-              </button>
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center"
-                onClick={() => filterFoods("all")}
-              >
-                <i className="fa fa-list mr-2"></i>
-                ทั้งหมด
-              </button>
-              <button
-                disabled={saleTemps.length === 0}
-                className="bg-red-500 text-white px-4 py-2 rounded-md disabled:opacity-50"
-                onClick={() => removeAllSaleTemp()}
-              >
-                <i className="fa fa-times mr-2"></i>
-                ล้างรายการ
-              </button>
-              {amount > 0 && (
-                <button
-                  className="bg-green-500 text-white px-4 py-2 rounded-md"
-                  onClick={() => {
-                    openModalBill();
-                    printBillBeforePay();
-                  }}
-                >
-                  <i className="fa fa-print mr-2"></i>
-                  พิมพ์ใบแจ้งรายการ
-                </button>
-              )}
+            )}
           </div>
 
           <div className="flex flex-wrap mt-4 gap-4">
@@ -525,7 +523,7 @@ export default function Page() {
             <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 h-72">
               {foods.map((food: any) => (
                 <div
-                  className="bg-white shadow-md rounded-md overflow-hidden h-72" 
+                  className="bg-white shadow-md rounded-md overflow-hidden h-72"
                   key={food.id}
                 >
                   <img
@@ -560,7 +558,6 @@ export default function Page() {
 
               {saleTemps.map((item: any) => (
                 <div className="grid mt-2" key={item.id}>
-                  {" "}
                   {/* เพิ่ม key ที่ไม่ซ้ำกัน */}
                   <div className="border border-gray-200 bg-white rounded-md shadow-md">
                     <div className="p-4 flex flex-col justify-center items-center">
@@ -579,7 +576,10 @@ export default function Page() {
                                 ? "opacity-50 cursor-not-allowed"
                                 : ""
                             }`}
-                            onClick={(e) => updateQty(item.id, item.qty - 1)}
+                            onClick={(e) => {
+                              item.qty <= 1 ? removeSaleTemp(item.id) : "";
+                              updateQty(item.id, item.qty - 1);
+                            }}
                           >
                             <i className="fa fa-minus"></i>
                           </button>
@@ -596,7 +596,9 @@ export default function Page() {
                                 ? "opacity-50 cursor-not-allowed"
                                 : ""
                             }`}
-                            onClick={(e) => updateQty(item.id, item.qty + 1)}
+                            onClick={(e) => {
+                              updateQty(item.id, item.qty + 1);
+                            }}
                           >
                             <i className="fa fa-plus"></i>
                           </button>
@@ -629,7 +631,12 @@ export default function Page() {
         </div>
       </div>
       {isOpenModalEdit && (
-        <MyModal id="modalEdit" title="แก้ไขรายการ" modalSize="modal-xl" onClose={closeModalEdit}>
+        <MyModal
+          id="modalEdit"
+          title="แก้ไขรายการ"
+          modalSize="modal-xl"
+          onClose={closeModalEdit}
+        >
           <div>
             <button
               onClick={() => createSaleTempDetail()}
@@ -655,9 +662,12 @@ export default function Page() {
             </thead>
             <tbody>
               {saleTempDetails.map((item: any, index: number) => (
-                <tr key={item.id} className={`${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                } border-b`}>
+                <tr
+                  key={item.id}
+                  className={`${
+                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  } border-b`}
+                >
                   <td className="text-center border border-gray-300">
                     <button
                       onClick={() => removeSaleTempDetail(item.id)}
@@ -815,10 +825,10 @@ export default function Page() {
       {isOpenModalBill && (
         <MyModal id="modalPrint" title="พิมพ์เอกสาร" onClose={closeModalBill}>
           {billUrl && (
-              <iframe
-                src={`${config.apiServer}/${billUrl}`}
-                className="w-full h-[600px]"
-              ></iframe>
+            <iframe
+              src={`${config.apiServer}/${billUrl}`}
+              className="w-full h-[600px]"
+            ></iframe>
           )}
         </MyModal>
       )}

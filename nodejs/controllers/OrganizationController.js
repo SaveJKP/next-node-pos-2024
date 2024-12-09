@@ -54,7 +54,8 @@ module.exports = {
     try {
       const file = req.files.file; // ดึงไฟล์โลโก้ที่ถูกอัปโหลด
       const extension = file.name.split(".").pop(); // ดึงนามสกุลของไฟล์
-      const fileName = `logo_${Date.now()}.${extension}`; // สร้างชื่อไฟล์ใหม่โดยใช้ timestamp
+      const uniqueSuffix = `log0_${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+      const fileName = `logo_${uniqueSuffix}.${extension}`; // สร้างชื่อไฟล์ใหม่โดยใช้ timestamp
 
       file.mv(`./uploads/${fileName}`); // ย้ายไฟล์ไปยังโฟลเดอร์ uploads
 

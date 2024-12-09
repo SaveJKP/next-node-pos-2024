@@ -80,7 +80,6 @@ export default function Page() {
       });
 
       if (button.isConfirmed) {
-        
         await axios.delete(
           config.apiServer + "/api/foodType/remove/" + item.id
         );
@@ -120,18 +119,20 @@ export default function Page() {
           </thead>
           <tbody>
             {foodTypes.map((item: any, index: number) => (
-              <tr key={index} className={`${
-                index % 2 === 0 ? "bg-white" : "bg-gray-50"
-              } border-b`}>
+              <tr
+                key={index}
+                className={`${
+                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                } border-b`}
+              >
                 <td className="p-2 border border-gray-300">{item.name}</td>
                 <td className="p-2 border border-gray-300">{item.remark}</td>
                 <td className="p-2 border border-gray-300 ">
-                  <div className="w-full h-full flex space-x-2">
+                  <div className="w-full h-full flex justify-center items-center space-x-2">
                     <button
                       className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md"
                       onClick={() => {
                         edit(item);
-                      
                       }}
                     >
                       <i className="fa fa-edit"></i>
@@ -151,7 +152,11 @@ export default function Page() {
         </table>
       </div>
       {isOpen && (
-        <MyModal id="modalFoodType" title="ประเภทอาหาร/เครื่องดื่ม" onClose={closeModal}>
+        <MyModal
+          id="modalFoodType"
+          title="ประเภทอาหาร/เครื่องดื่ม"
+          onClose={closeModal}
+        >
           <div className="mt-3">ชื่อ</div>
           <input
             className="mt-2 p-2 w-full border border-gray-300 rounded-md"

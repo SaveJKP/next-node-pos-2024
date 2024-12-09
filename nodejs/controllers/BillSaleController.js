@@ -64,6 +64,12 @@ module.exports = {
         },
       });
 
+      await prisma.billSaleDetail.deleteMany({
+        where: {
+          billSaleId: parseInt(req.params.id), // แปลง id จากพารามิเตอร์ให้เป็นจำนวนเต็ม
+        },
+      }); 
+
       // ส่งข้อความ success เมื่อทำการลบสำเร็จ
       res.json({ message: "success" });
     } catch (error) {

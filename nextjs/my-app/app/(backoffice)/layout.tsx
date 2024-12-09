@@ -1,8 +1,10 @@
 import Sidebar from "./components/Sidebar";
 
 export default function DashboardLayout({
+  title = "Next.js",
   children,
 }: Readonly<{
+  title?: string;
   children: React.ReactNode;
 }>) {
   return (

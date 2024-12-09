@@ -174,9 +174,12 @@ export default function Page() {
             </thead>
             <tbody>
               {foodSizes.map((item: any, index: number) => (
-                <tr key={item.id} className={`${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                } border-b`}>
+                <tr
+                  key={item.id}
+                  className={`${
+                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  } border-b`}
+                >
                   <td className="p-2 border border-gray-300">
                     {item.FoodType.name}
                   </td>
@@ -186,12 +189,11 @@ export default function Page() {
                     {item.moneyAdded}
                   </td>
                   <td className="p-2 border border-gray-300 ">
-                    <div className="w-full h-full flex space-x-2">
+                    <div className="w-full h-full flex justify-center items-center space-x-2">
                       <button
                         className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md"
                         onClick={() => {
                           edit(item);
-                      
                         }}
                       >
                         <i className="fa fa-edit"></i>
@@ -254,7 +256,6 @@ export default function Page() {
             >
               บันทึก
             </button>
-            
           </div>
         </MyModal>
       )}
