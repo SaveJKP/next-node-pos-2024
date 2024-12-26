@@ -7,22 +7,21 @@ import config from "@/app/config";
 import MyModal from "../components/MyModal";
 
 export default function Page() {
-  const [foodTypeId, setFoodTypeId] = useState(0);
   const [foodTypes, setFoodTypes] = useState([]);
+  const [foods, setFoods] = useState([]);
+
+  const [foodTypeId, setFoodTypeId] = useState(0);
   const [name, setName] = useState("");
   const [remark, setRemark] = useState("");
   const [id, setId] = useState(0);
   const [price, setPrice] = useState(0);
   const [img, setImg] = useState("");
-  const [myFile, setMyFile] = useState<File | null>(null);
-  const [foods, setFoods] = useState([]);
   const [foodType, setFoodType] = useState("food");
+  const [myFile, setMyFile] = useState<File | null>(null);
+
   const [isOpen, setIsOpen] = useState(false);
-
-  // ฟังก์ชันสำหรับปิด Modal
+  
   const closeModal = () => setIsOpen(false);
-
-  // ฟังก์ชันสำหรับเปิด Modal
   const openModal = () => setIsOpen(true);
 
   useEffect(() => {
@@ -47,13 +46,6 @@ export default function Page() {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files ? e.target.files[0] : null; // เลือกไฟล์แรก
-    if (file) {
-      setMyFile(file); // เก็บไฟล์
-    }
-  };
-
   const fetchData = async () => {
     try {
       const res = await axios.get(config.apiServer + "/api/food/list");
@@ -64,6 +56,13 @@ export default function Page() {
         text: e.message,
         icon: "error",
       });
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null; // เลือกไฟล์แรก
+    if (file) {
+      setMyFile(file); // เก็บไฟล์
     }
   };
 
@@ -205,35 +204,35 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {foods.map((item: any, index: number) => (
+              {foods.map((food: any, index: number) => (
                 <tr
-                  key={item.id}
+                  key={food.id}
                   className={`${
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   } border-b`}
                 >
                   <td className="p-2 border border-gray-300">
                     <img
-                      src={config.apiServer + "/uploads/" + item.img}
-                      alt={item.name}
+                      src={config.apiServer + "/uploads/" + food.img}
+                      alt={food.name}
                       className="object-cover"
                     />
                   </td>
                   <td className="p-2 border border-gray-300">
-                    {item.FoodType.name}
+                    {food.FoodType.name}
                   </td>
                   <td className="p-2 border border-gray-300">
-                    {getFoodTypeName(item.foodType)}
+                    {getFoodTypeName(food.foodType)}
                   </td>
-                  <td className="p-2 border border-gray-300">{item.name}</td>
-                  <td className="p-2 border border-gray-300">{item.remark}</td>
-                  <td className="p-2 border border-gray-300">{item.price}</td>
+                  <td className="p-2 border border-gray-300">{food.name}</td>
+                  <td className="p-2 border border-gray-300">{food.remark}</td>
+                  <td className="p-2 border border-gray-300">{food.price}</td>
                   <td className="p-2 border border-gray-300">
                     <div className="w-full h-full flex justify-center items-center space-x-2">
                       <button
                         className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md"
                         onClick={() => {
-                          edit(item);
+                          edit(food);
                         }}
                       >
                         <i className="fa fa-edit"></i>
@@ -241,7 +240,7 @@ export default function Page() {
 
                       <button
                         className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
-                        onClick={(e) => remove(item)}
+                        onClick={(e) => remove(food)}
                       >
                         <i className="fa fa-times"></i>
                       </button>

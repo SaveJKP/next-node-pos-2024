@@ -19,6 +19,7 @@ const saleTempController = require('./controllers/SaleTempController');
 const organizationController = require('./controllers/OrganizationController');
 const billSaleController = require('./controllers/BillSaleController');
 const reportController = require('./controllers/ReportController');
+const saleTempDetailController = require('./controllers/SaleTempDetailController');
 
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
@@ -70,18 +71,22 @@ app.post('/api/saleTemp/printBillAfterPay', (req, res) => saleTempController.pri
 app.post('/api/saleTemp/endSale', (req, res) => saleTempController.endSale(req, res));
 app.post('/api/saleTemp/printBillBeforePay', (req, res) => saleTempController.printBillBeforePay(req, res));
 app.delete('/api/saleTemp/removeSaleTempDetail', (req, res) => saleTempController.removeSaleTempDetail(req, res));
-app.post('/api/saleTemp/createSaleTempDetail', (req, res) => saleTempController.createSaleTempDetail(req, res));
-app.put('/api/saleTemp/unselectSize', (req, res) => saleTempController.unselectSize(req, res));
-app.put('/api/saleTemp/selectSize', (req, res) => saleTempController.selectSize(req, res));
-app.put('/api/saleTemp/unselectTaste', (req, res) => saleTempController.unselectTaste(req, res));
-app.put('/api/saleTemp/selectTaste', (req, res) => saleTempController.selectTaste(req, res));
 app.get('/api/saleTemp/info/:id', (req, res) => saleTempController.info(req, res));
-app.post('/api/saleTemp/generateSaleTempDetail', (req, res) => saleTempController.generateSaleTempDetail(req, res));
 app.put('/api/saleTemp/updateQty', (req, res) => saleTempController.updateQty(req, res));
 app.delete('/api/saleTemp/removeAll', (req, res) => saleTempController.removeAll(req, res));
 app.delete('/api/saleTemp/remove/:id', (req, res) => saleTempController.remove(req, res));
 app.get('/api/saleTemp/list', (req, res) => saleTempController.list(req, res));
 app.post('/api/saleTemp/create', (req, res) => saleTempController.create(req, res));
+
+//
+// saleTempDetail
+//
+app.post('/api/saleTempDetail/createForQty', (req, res) => saleTempDetailController.createForQty(req, res));
+app.post('/api/saleTempDetail/create', (req, res) => saleTempController.create(req, res));
+app.put('/api/saleTempDetail/unselectSize', (req, res) => saleTempDetailController.unselectSize(req, res));
+app.put('/api/saleTempDetail/selectSize', (req, res) => saleTempDetailController.selectSize(req, res));
+app.put('/api/saleTempDetail/unselectTaste', (req, res) => saleTempDetailController.unselectTaste(req, res));
+app.put('/api/saleTempDetail/selectTaste', (req, res) => saleTempDetailController.selectTaste(req, res));
 
 //
 // food

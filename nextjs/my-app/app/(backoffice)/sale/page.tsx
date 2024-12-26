@@ -1,24 +1,26 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import config from "@/app/config";
 import axios from "axios";
 import Swal from "sweetalert2";
 import MyModal from "../components/MyModal";
 
 export default function Page() {
-  const [table, setTable] = useState(1);
-  const [foods, setFoods] = useState([]);
   const [saleTemps, setSaleTemps] = useState([]);
-  const [amount, setAmount] = useState(0);
-  const [amountAdded, setAmountAdded] = useState(0);
-  const [tastes, setTastes] = useState([]);
-  const [sizes, setSizes] = useState([]);
   const [saleTempDetails, setSaleTempDetails] = useState([]);
+  const [foods, setFoods] = useState([]);
+  const [sizes, setSizes] = useState([]);
+  const [tastes, setTastes] = useState([]);
+
+  const [table, setTable] = useState(1);
   const [saleTempId, setSaleTempId] = useState(0);
-  const [payType, setPayType] = useState("cash");
-  const [inputMoney, setInputMoney] = useState(0);
   const [billUrl, setBillUrl] = useState("");
+
+  const [amountAdded, setAmountAdded] = useState(0);
+  const [amount, setAmount] = useState(0);
+  const [inputMoney, setInputMoney] = useState(0);
+  const [payType, setPayType] = useState("cash");
 
   // สร้าง state สําหรับเปิดและปิด Modal
   const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
@@ -29,6 +31,7 @@ export default function Page() {
   const openModalSale = () => setIsOpenModalSale(true);
 
   const closeModalEdit = () => setIsOpenModalEdit(false);
+
   const openModalEdit = (item: any) => {
     setIsOpenModalEdit(true);
     setSaleTempId(item.id);
@@ -38,22 +41,10 @@ export default function Page() {
   const closeModalBill = () => setIsOpenModalBill(false);
   const openModalBill = () => setIsOpenModalBill(true);
 
-  const myRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     getFoods();
     fetchDataSaleTemp();
-    (myRef.current as HTMLInputElement).focus();
   }, []);
-
-  const sumAmount = (saleTemps: any) => {
-    let sum = 0;
-    saleTemps.forEach((item: any) => {
-      sum += item.Food.price * item.qty;
-    });
-
-    setAmount(sum);
-  };
 
   const getFoods = async () => {
     try {
@@ -83,23 +74,25 @@ export default function Page() {
     }
   };
 
-  const sale = async (foodId: number) => {
-    try {
-      const payload = {
-        tableNo: table,
-        userId: Number(localStorage.getItem("next_user_id")),
-        foodId: foodId,
-      };
+  //ฟังก์ชันบวกเงินของขนาดอาหาร
+  const sumMoneyAdded = (saleTempDetails: any) => {
+    let sum = 0;
 
-      await axios.post(config.apiServer + "/api/saleTemp/create", payload);
-      fetchDataSaleTemp();
-    } catch (e: any) {
-      Swal.fire({
-        title: "error",
-        text: e.message,
-        icon: "error",
-      });
+    for (let i = 0; i < saleTempDetails.length; i++) {
+      const item = saleTempDetails[i];
+      sum += item.FoodSize?.moneyAdded || 0;
     }
+    return sum;
+  };
+
+  //ฟังก์ชันบวกเงินของอาหาร จากจำนวนอาหาร
+  const sumAmount = (saleTemps: any) => {
+    let sum = 0;
+    saleTemps.forEach((item: any) => {
+      sum += item.Food.price * item.qty;
+    });
+
+    setAmount(sum);
   };
 
   const fetchDataSaleTemp = async () => {
@@ -113,9 +106,45 @@ export default function Page() {
       results.forEach((item: any) => {
         sum += sumMoneyAdded(item.SaleTempDetails);
       });
+      setAmountAdded(sum);
 
       sumAmount(results);
-      setAmountAdded(sum);
+    } catch (e: any) {
+      Swal.fire({
+        title: "error",
+        text: e.message,
+        icon: "error",
+      });
+    }
+  };
+
+  const fetchDataSaleTempInfo = async (saleTempId: number) => {
+    try {
+      const res = await axios.get(
+        config.apiServer + "/api/saleTemp/info/" + saleTempId
+      );
+      setSaleTempDetails(res.data.results.SaleTempDetails);
+      setTastes(res.data.results.Food.FoodType.Tastes || []);
+      setSizes(res.data.results.Food.FoodType.FoodSizes || []);
+    } catch (e: any) {
+      Swal.fire({
+        title: "error",
+        text: e.message,
+        icon: "error",
+      });
+    }
+  };
+
+  const createSaleTemp = async (foodId: number) => {
+    try {
+      const payload = {
+        tableNo: table,
+        userId: Number(localStorage.getItem("next_user_id")),
+        foodId: foodId,
+      };
+
+      await axios.post(config.apiServer + "/api/saleTemp/create", payload);
+      fetchDataSaleTemp();
     } catch (e: any) {
       Swal.fire({
         title: "error",
@@ -201,7 +230,7 @@ export default function Page() {
       };
 
       await axios.post(
-        config.apiServer + "/api/saleTemp/generateSaleTempDetail",
+        config.apiServer + "/api/saleTempDetail/createForQty",
         payload
       );
       await fetchDataSaleTemp();
@@ -215,34 +244,6 @@ export default function Page() {
     }
   };
 
-  const fetchDataSaleTempInfo = async (saleTempId: number) => {
-    try {
-      const res = await axios.get(
-        config.apiServer + "/api/saleTemp/info/" + saleTempId
-      );
-      setSaleTempDetails(res.data.results.SaleTempDetails);
-      setTastes(res.data.results.Food.FoodType?.Tastes || []);
-      setSizes(res.data.results.Food.FoodType?.FoodSizes || []);
-    } catch (e: any) {
-      Swal.fire({
-        title: "error",
-        text: e.message,
-        icon: "error",
-      });
-    }
-  };
-
-  const sumMoneyAdded = (saleTempDetails: any) => {
-    let sum = 0;
-
-    for (let i = 0; i < saleTempDetails.length; i++) {
-      const item = saleTempDetails[i];
-      sum += item.FoodSize?.moneyAdded || 0;
-    }
-
-    return sum;
-  };
-
   const selectTaste = async (
     tasteId: number,
     saleTempDetailId: number,
@@ -254,7 +255,7 @@ export default function Page() {
         saleTempDetailId: saleTempDetailId,
       };
 
-      await axios.put(config.apiServer + "/api/saleTemp/selectTaste", payload);
+      await axios.put(config.apiServer + "/api/saleTempDatail/selectTaste", payload);
       fetchDataSaleTempInfo(saleTempId);
     } catch (e: any) {
       Swal.fire({
@@ -275,7 +276,7 @@ export default function Page() {
       };
 
       await axios.put(
-        config.apiServer + "/api/saleTemp/unSelectTaste",
+        config.apiServer + "/api/saleTempDetail/unSelectTaste",
         payload
       );
       fetchDataSaleTempInfo(saleTempId);
@@ -299,7 +300,7 @@ export default function Page() {
         sizeId: sizeId,
       };
 
-      await axios.put(config.apiServer + "/api/saleTemp/selectSize", payload);
+      await axios.put(config.apiServer + "/api/saleTempDetail/selectSize", payload);
       await fetchDataSaleTempInfo(saleTempId);
       await fetchDataSaleTemp();
     } catch (e: any) {
@@ -317,7 +318,7 @@ export default function Page() {
         saleTempDetailId: saleTempDetailId,
       };
 
-      await axios.put(config.apiServer + "/api/saleTemp/unSelectSize", payload);
+      await axios.put(config.apiServer + "/api/saleTempDetail/unSelectSize", payload);
       await fetchDataSaleTempInfo(saleTempId);
       await fetchDataSaleTemp();
     } catch (e: any) {
@@ -336,7 +337,7 @@ export default function Page() {
       };
 
       await axios.post(
-        config.apiServer + "/api/saleTemp/createSaleTempDetail",
+        config.apiServer + "/api/saleTempDetail/create",
         payload
       );
       await fetchDataSaleTemp();
@@ -468,7 +469,6 @@ export default function Page() {
           <div className="flex flex-wrap gap-3  items-center w-full">
             <label className="h-10   px-2 pt-2 rounded-l-md">Table No.</label>
             <input
-              ref={myRef}
               type="text"
               className=" px-4 py-2 border border-gray-300 rounded-md"
               value={table}
@@ -530,7 +530,7 @@ export default function Page() {
                     src={config.apiServer + "/uploads/" + food.img}
                     className="w-full h-48 object-cover cursor-pointer"
                     alt={food.name}
-                    onClick={() => sale(food.id)}
+                    onClick={() => createSaleTemp(food.id)}
                   />
                   <div className="p-2">
                     <h5 className="text-lg font-bold">{food.name}</h5>
@@ -556,29 +556,31 @@ export default function Page() {
                 </button>
               )}
 
-              {saleTemps.map((item: any) => (
-                <div className="grid mt-2" key={item.id}>
+              {saleTemps.map((saleTemp: any) => (
+                <div className="grid mt-2" key={saleTemp.id}>
                   {/* เพิ่ม key ที่ไม่ซ้ำกัน */}
                   <div className="border border-gray-200 bg-white rounded-md shadow-md">
                     <div className="p-4 flex flex-col justify-center items-center">
-                      <div className="font-bold">{item.Food.name}</div>
+                      <div className="font-bold">{saleTemp.Food.name}</div>
                       <div>
-                        {item.Food.price} x {item.qty} ={" "}
-                        {item.Food.price * item.qty}
+                        {saleTemp.Food.price} x {saleTemp.qty} ={" "}
+                        {saleTemp.Food.price * saleTemp.qty}
                       </div>
 
                       <div className="mt-2">
                         <div className="flex items-center">
                           <button
-                            disabled={item.SaleTempDetails.length > 0}
+                            disabled={saleTemp.SaleTempDetails.length > 0}
                             className={`px-3 py-2 bg-blue-500 text-white rounded-l-md hover:bg-blue-600 ${
-                              item.SaleTempDetails.length > 0
+                              saleTemp.SaleTempDetails.length > 0
                                 ? "opacity-50 cursor-not-allowed"
                                 : ""
                             }`}
                             onClick={(e) => {
-                              item.qty <= 1 ? removeSaleTemp(item.id) : "";
-                              updateQty(item.id, item.qty - 1);
+                              saleTemp.qty <= 1
+                                ? removeSaleTemp(saleTemp.id)
+                                : "";
+                              updateQty(saleTemp.id, saleTemp.qty - 1);
                             }}
                           >
                             <i className="fa fa-minus"></i>
@@ -586,18 +588,18 @@ export default function Page() {
                           <input
                             type="text"
                             className="w-12 text-center font-bold border-t border-b border-gray-300"
-                            value={item.qty}
+                            value={saleTemp.qty}
                             disabled
                           />
                           <button
-                            disabled={item.SaleTempDetails.length > 0}
+                            disabled={saleTemp.SaleTempDetails.length > 0}
                             className={`px-3 py-2 bg-blue-500 text-white rounded-r-md hover:bg-blue-600 ${
-                              item.SaleTempDetails.length > 0
+                              saleTemp.SaleTempDetails.length > 0
                                 ? "opacity-50 cursor-not-allowed"
                                 : ""
                             }`}
                             onClick={(e) => {
-                              updateQty(item.id, item.qty + 1);
+                              updateQty(saleTemp.id, saleTemp.qty + 1);
                             }}
                           >
                             <i className="fa fa-plus"></i>
@@ -608,14 +610,14 @@ export default function Page() {
                     <div className="p-2 border-t border-gray-200">
                       <div className="flex space-x-2">
                         <button
-                          onClick={(e) => removeSaleTemp(item.id)}
+                          onClick={(e) => removeSaleTemp(saleTemp.id)}
                           className="w-full px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                         >
                           <i className="fa fa-times mr-2"></i>
                           ยกเลิก
                         </button>
                         <button
-                          onClick={(e) => openModalEdit(item)}
+                          onClick={(e) => openModalEdit(saleTemp)}
                           className="w-full px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
                         >
                           <i className="fa fa-cog mr-2"></i>
@@ -661,28 +663,33 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {saleTempDetails.map((item: any, index: number) => (
+              {saleTempDetails.map((saleTempDetail: any, index: number) => (
                 <tr
-                  key={item.id}
+                  key={saleTempDetail.id}
                   className={`${
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   } border-b`}
                 >
                   <td className="text-center border border-gray-300">
                     <button
-                      onClick={() => removeSaleTempDetail(item.id)}
+                      onClick={() => removeSaleTempDetail(saleTempDetail.id)}
                       className="py-1 px-2 bg-red-500 hover:bg-red-700 text-white rounded"
                     >
                       <i className="fa fa-times"></i>
                     </button>
                   </td>
-                  <td className="border border-gray-300">{item.Food.name}</td>
+                  <td className="border border-gray-300">
+                    {saleTempDetail.Food.name}
+                  </td>
                   <td className="text-center border border-gray-300">
                     {tastes.map((taste: any) =>
-                      item.tasteId === taste.id ? (
+                      saleTempDetail.tasteId === taste.id ? (
                         <button
                           onClick={() =>
-                            unSelectTaste(item.id, item.saleTempId)
+                            unSelectTaste(
+                              saleTempDetail.id,
+                              saleTempDetail.saleTempId
+                            )
                           }
                           className="py-1 px-2 bg-red-500 hover:bg-red-700 text-white rounded mr-1"
                           key={taste.id}
@@ -692,7 +699,11 @@ export default function Page() {
                       ) : (
                         <button
                           onClick={() =>
-                            selectTaste(taste.id, item.id, item.saleTempId)
+                            selectTaste(
+                              taste.id,
+                              saleTempDetail.id,
+                              saleTempDetail.saleTempId
+                            )
                           }
                           className="py-1 px-2 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded mr-1"
                           key={taste.id}
@@ -705,10 +716,13 @@ export default function Page() {
                   <td className="text-center border border-gray-300">
                     {sizes.map((size: any) =>
                       size.moneyAdded > 0 ? (
-                        item.foodSizeId === size.id ? (
+                        saleTempDetail.foodSizeId === size.id ? (
                           <button
                             onClick={() =>
-                              unSelectSize(item.id, item.saleTempId)
+                              unSelectSize(
+                                saleTempDetail.id,
+                                saleTempDetail.saleTempId
+                              )
                             }
                             className="py-1 px-2 bg-green-500 hover:bg-green-700 text-white rounded mr-1"
                             key={size.id}
@@ -718,7 +732,11 @@ export default function Page() {
                         ) : (
                           <button
                             onClick={() =>
-                              selectSize(size.id, item.id, item.saleTempId)
+                              selectSize(
+                                size.id,
+                                saleTempDetail.id,
+                                saleTempDetail.saleTempId
+                              )
                             }
                             className="py-1 px-2 border border-green-500 text-green-500 hover:bg-green-500 hover:text-white rounded mr-1"
                             key={size.id}

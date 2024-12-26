@@ -19,3 +19,39 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.card {
+  @apply min-h-full  border border-gray-200 bg-white rounded-md shadow-md overflow-hidden;
+}
+
+.card-title {
+  @apply bg-white border-b border-gray-200 text-lg font-bold p-3;
+}
+
+.btn{
+@apply bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md
+}
+
+.table{
+@apply text-center mt-3 w-full  border border-gray-300
+}
+
+.thead{
+@apply bg-gray-100
+}
+
+.th{
+@apply p-2 border border-gray-300
+}
+
+.td{
+@apply p-2 border border-gray-300
+}
+
+.btn-edit{
+@apply bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md
+}
+
+.btn-delete{
+@apply bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md
+}

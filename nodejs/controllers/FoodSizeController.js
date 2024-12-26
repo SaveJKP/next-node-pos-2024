@@ -26,7 +26,7 @@ module.exports = {
     try {
       const rows = await prisma.foodSize.findMany({
         include: {
-          FoodType: true, // รวมข้อมูลประเภทอาหาร
+          FoodType: { select: { name: true }}, // รวมข้อมูลประเภทอาหาร
         },
         where: {
           status: "use", // เงื่อนไขสถานะต้องเป็น 'use'

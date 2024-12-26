@@ -67,7 +67,11 @@ module.exports = {
     try {
       const foods = await prisma.food.findMany({
         include: {
-          FoodType: true,
+          FoodType: {
+            select: {
+              name: true,
+            },
+          },
         },
         where: {
           status: "use",

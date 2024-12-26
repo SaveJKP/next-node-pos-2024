@@ -8,21 +8,20 @@ import config from "@/app/config";
 
 export default function Page() {
   // ใช้ useState เพื่อจัดการกับ state ของแต่ละฟิลด์ เช่น ชื่อ, หมายเหตุ, id, foodTypeId, moneyAdded และอื่นๆ
+  const [foodTypes, setFoodTypes] = useState([]); // เก็บข้อมูลประเภทอาหาร
+  const [foodSizes, setFoodSizes] = useState([]); // เก็บข้อมูลขนาดอาหาร
+  
   const [name, setName] = useState(""); // ชื่อประเภทอาหาร/ขนาดอาหาร
   const [remark, setRemark] = useState(""); // หมายเหตุ
   const [id, setId] = useState(0); // id ของขนาดอาหาร (ใช้เพื่อการแก้ไขหรือสร้างรายการใหม่)
   const [foodTypeId, setFoodTypeId] = useState(0); // foodTypeId (ประเภทอาหาร) ที่เกี่ยวข้อง
   const [moneyAdded, setMoneyAdded] = useState(0); // ค่าเงินเพิ่มเติม
-  const [foodTypes, setFoodTypes] = useState([]); // เก็บข้อมูลประเภทอาหาร
-  const [foodSizes, setFoodSizes] = useState([]); // เก็บข้อมูลขนาดอาหาร
+
   const [isOpen, setIsOpen] = useState(false);
 
-  // ฟังก์ชันสำหรับปิด Modal
   const closeModal = () => setIsOpen(false);
-
-  // ฟังก์ชันสำหรับเปิด Modal
   const openModal = () => setIsOpen(true);
-  // ใช้ useEffect เพื่อเรียกฟังก์ชัน fetchData และ fetchDataFoodSize เมื่อ component ถูกโหลดครั้งแรก
+
   useEffect(() => {
     fetchData(); // ดึงข้อมูลขนาดอาหาร
     fetchDataFoodType(); // ดึงข้อมูลประเภทอาหาร
@@ -146,13 +145,13 @@ export default function Page() {
 
   return (
     <>
-      <div className="min-h-full border border-gray-200 bg-white rounded-md shadow- overflow-hidden">
-        <div className=" bg-white border-b border-gray-200 text-lg font-bold p-3 ">
+      <div className="card">
+        <div className=" card-title">
           ขนาดอาหาร
         </div>
         <div className=" p-4">
           <button
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+            className="btn"
             onClick={() => {
               clearForm();
             }}
@@ -160,47 +159,47 @@ export default function Page() {
             <i className="fa fa-plus mr-2"></i> เพิ่มรายการ
           </button>
 
-          <table className="text-center mt-3 w-full  border border-gray-300">
-            <thead className="bg-gray-100">
+          <table className="table">
+            <thead className="thead">
               <tr className="">
-                <th className="p-2 border border-gray-300 w-36">ประเภทอาหาร</th>
-                <th className="p-2 border border-gray-300 w-24">ชื่อ</th>
-                <th className="p-2 border border-gray-300">หมายเหตุ</th>
-                <th className="p-2 border border-gray-300 w-24 ">
+                <th className="th w-36">ประเภทอาหาร</th>
+                <th className="th w-24">ชื่อ</th>
+                <th className="th">หมายเหตุ</th>
+                <th className="th w-24 ">
                   คิดเงินเพิ่ม
                 </th>
-                <th className="p-2 border border-gray-300 w-28"></th>
+                <th className="th w-28"></th>
               </tr>
             </thead>
             <tbody>
-              {foodSizes.map((item: any, index: number) => (
+              {foodSizes.map((foodSize: any, index: number) => (
                 <tr
-                  key={item.id}
+                  key={foodSize.id}
                   className={`${
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   } border-b`}
                 >
-                  <td className="p-2 border border-gray-300">
-                    {item.FoodType.name}
+                  <td className="td">
+                    {foodSize.FoodType.name}
                   </td>
-                  <td className="p-2 border border-gray-300">{item.name}</td>
-                  <td className="p-2 border border-gray-300">{item.reamrk}</td>
-                  <td className="p-2 border border-gray-300">
-                    {item.moneyAdded}
+                  <td className="td">{foodSize.name}</td>
+                  <td className="td">{foodSize.reamrk}</td>
+                  <td className="td">
+                    {foodSize.moneyAdded}
                   </td>
-                  <td className="p-2 border border-gray-300 ">
+                  <td className="td ">
                     <div className="w-full h-full flex justify-center items-center space-x-2">
                       <button
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md"
+                        className="btn-edit"
                         onClick={() => {
-                          edit(item);
+                          edit(foodSize);
                         }}
                       >
                         <i className="fa fa-edit"></i>
                       </button>
                       <button
-                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
-                        onClick={(e) => remove(item)}
+                        className="btn-delete"
+                        onClick={(e) => remove(foodSize)}
                       >
                         <i className="fa fa-times"></i>
                       </button>
@@ -220,9 +219,9 @@ export default function Page() {
             value={foodTypeId}
             onChange={(e) => setFoodTypeId(parseInt(e.target.value))}
           >
-            {foodTypes.map((item: any) => (
-              <option value={item.id} key={item.id}>
-                {item.name}
+            {foodTypes.map((foodType: any) => (
+              <option value={foodType.id} key={foodType.id}>
+                {foodType.name}
               </option>
             ))}
           </select>

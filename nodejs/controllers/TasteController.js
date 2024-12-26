@@ -1,5 +1,4 @@
 const { PrismaClient } = require("@prisma/client");
-const { remove } = require("./FoodSizeController"); // นำเข้า remove จาก FoodSizeController
 const prisma = new PrismaClient();
 
 module.exports = {
@@ -26,7 +25,7 @@ module.exports = {
       // ดึงข้อมูลรสชาติที่สถานะ 'ใช้' พร้อมข้อมูลประเภทอาหาร
       const rows = await prisma.taste.findMany({
         include: {
-          FoodType: true, // รวมข้อมูลประเภทอาหาร
+          FoodType: { select: { name: true } }, // รวมข้อมูลประเภทอาหาร
         },
         where: {
           status: "use", // เงื่อนไขกรองรสชาติที่ใช้งาน

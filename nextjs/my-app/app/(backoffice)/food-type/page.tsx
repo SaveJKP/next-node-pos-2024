@@ -7,25 +7,16 @@ import axios from "axios"; // import Axios สำหรับการเรี�
 import config from "@/app/config"; // import การตั้งค่า config เช่น URL ของ API
 
 export default function Page() {
+  const [foodTypes, setFoodTypes] = useState([]);
+
   const [name, setName] = useState("");
   const [remark, setRemark] = useState("");
-  const [foodTypes, setFoodTypes] = useState([]);
   const [id, setId] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-
-  const closeModal = () => setIsOpen(false);
-  const openModal = () => setIsOpen(true);
 
   useEffect(() => {
     fetchData();
   }, []);
-
-  const edit = (item: any) => {
-    setId(item.id);
-    setName(item.name);
-    setRemark(item.remark);
-    openModal();
-  };
 
   const fetchData = async () => {
     try {
@@ -40,6 +31,13 @@ export default function Page() {
     }
   };
 
+  const edit = (item: any) => {
+    setId(item.id);
+    setName(item.name);
+    setRemark(item.remark);
+    openModal();
+  };
+
   const save = async () => {
     try {
       const payload = { name, remark, id };
@@ -48,7 +46,6 @@ export default function Page() {
         await axios.post(config.apiServer + "/api/foodType/create", payload);
       } else {
         await axios.put(config.apiServer + "/api/foodType/update", payload);
-        setId(0);
       }
 
       fetchData();
@@ -60,13 +57,6 @@ export default function Page() {
         icon: "error",
       });
     }
-  };
-
-  const clearForm = () => {
-    setName("");
-    setRemark("");
-    setId(0);
-    openModal();
   };
 
   const remove = async (item: any) => {
@@ -93,54 +83,63 @@ export default function Page() {
       });
     }
   };
+  const clearForm = () => {
+    setName("");
+    setRemark("");
+    setId(0);
+  };
+
+  const closeModal = () => setIsOpen(false);
+  const openModal = () => setIsOpen(true);
 
   return (
-    <div className="min-h-full  border border-gray-200 bg-white rounded-md shadow-md overflow-hidden">
-      <div className="bg-white border-b border-gray-200 text-lg font-bold p-3">
+    <div className="card">
+      <div className="card-title">
         ประเภทอาหาร/เครื่องดื่ม
       </div>
       <div className=" p-4">
         <button
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+          className="btn"
           onClick={() => {
             clearForm();
+            openModal();
           }}
         >
           <i className="fa fa-plus mr-2"></i> เพิ่มรายการ
         </button>
 
-        <table className="text-center mt-3 w-full  border border-gray-300">
-          <thead className="bg-gray-100">
+        <table className="table">
+          <thead className="thead">
             <tr>
-              <th className="p-2 border border-gray-300 w-24">ชื่อ</th>
-              <th className="p-2 border border-gray-300 w-auto">หมายเหตุ</th>
-              <th className="p-2 border border-gray-300 w-28"></th>
+              <th className="th w-24">ชื่อ</th>
+              <th className="th w-auto">หมายเหตุ</th>
+              <th className="th w-28"></th>
             </tr>
           </thead>
           <tbody>
-            {foodTypes.map((item: any, index: number) => (
+            {foodTypes.map((foodType: any, index: number) => (
               <tr
                 key={index}
                 className={`${
                   index % 2 === 0 ? "bg-white" : "bg-gray-50"
                 } border-b`}
               >
-                <td className="p-2 border border-gray-300">{item.name}</td>
-                <td className="p-2 border border-gray-300">{item.remark}</td>
-                <td className="p-2 border border-gray-300 ">
+                <td className="td">{foodType.name}</td>
+                <td className="td">{foodType.remark}</td>
+                <td className="td ">
                   <div className="w-full h-full flex justify-center items-center space-x-2">
                     <button
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md"
+                      className="btn-edit"
                       onClick={() => {
-                        edit(item);
+                        edit(foodType);
                       }}
                     >
                       <i className="fa fa-edit"></i>
                     </button>
 
                     <button
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
-                      onClick={(e) => remove(item)}
+                      className="btn-delete"
+                      onClick={() => remove(foodType)}
                     >
                       <i className="fa fa-times"></i>
                     </button>
@@ -171,7 +170,7 @@ export default function Page() {
           />
           <div className="mt-4 flex justify-end space-x-3">
             <button
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              className="btn"
               onClick={save}
             >
               บันทึก

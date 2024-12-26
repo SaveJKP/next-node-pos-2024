@@ -9,11 +9,13 @@ import Swal from "sweetalert2";
 export default function Page() {
   // ใช้ state เพื่อเก็บข้อมูลประเภทอาหาร, รสชาติอาหาร, id และฟิลด์อื่นๆ
   const [foodTypes, setFoodTypes] = useState([]); // เก็บข้อมูลประเภทอาหาร
+  const [tastes, setTastes] = useState([]); // เก็บข้อมูลรสชาติอาหาร
+  
   const [foodTypeId, setFoodTypeId] = useState(0); // เก็บ foodTypeId ของรายการที่กำลังถูกเลือก
   const [name, setName] = useState(""); // เก็บชื่อรสชาติอาหาร
   const [remark, setRemark] = useState(""); // เก็บหมายเหตุ
-  const [tastes, setTastes] = useState([]); // เก็บข้อมูลรสชาติอาหาร
   const [id, setId] = useState(0); // เก็บ id สำหรับใช้ในการแก้ไขข้อมูล
+
   const [isOpen, setIsOpen] = useState(false);
 
   const closeModal = () => setIsOpen(false);
@@ -128,13 +130,13 @@ export default function Page() {
 
   return (
     <>
-      <div className="min-h-full border border-gray-200 bg-white rounded-md shadow-md overflow-hidden">
-        <div className="bg-white border-b border-gray-200 text-lg font-bold p-3">
+      <div className="card">
+        <div className="card-title">
           รสชาติอาหาร
         </div>
         <div className=" p-4">
           <button
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+            className="btn"
             onClick={() => {
               clearForm();
             }}
@@ -143,45 +145,45 @@ export default function Page() {
           </button>
 
           {/* แสดงข้อมูลรสชาติอาหารในตาราง */}
-          <table className="text-center mt-3 w-full  border border-gray-300">
-            <thead className="bg-gray-100">
+          <table className="table">
+            <thead className="thead">
               <tr>
-                <th className="p-2 border border-gray-300 w-44">ประเภทอาหาร</th>
-                <th className="p-2 border border-gray-300 w-24">ชื่อ</th>
-                <th className="p-2 border border-gray-300 w-auto">หมายเหตุ</th>
-                <th className="p-2 border border-gray-300 w-28"></th>
+                <th className="th w-44">ประเภทอาหาร</th>
+                <th className="th w-24">ชื่อ</th>
+                <th className="th w-auto">หมายเหตุ</th>
+                <th className="th w-28"></th>
               </tr>
             </thead>
             <tbody>
-              {tastes.map((item: any, index: number) => (
+              {tastes.map((taste: any, index: number) => (
                 <tr
-                  key={item.id}
+                  key={taste.id}
                   className={`${
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   } border-b`}
                 >
-                  <td className="p-2 border border-gray-300">
-                    {item.FoodType.name}
+                  <td className="td">
+                    {taste.FoodType.name}
                   </td>
                   {/* แสดงชื่อประเภทอาหาร */}
-                  <td className="p-2 border border-gray-300">{item.name}</td>
+                  <td className="td">{taste.name}</td>
                   {/* แสดงชื่อรสชาติอาหาร */}
-                  <td className="p-2 border border-gray-300">{item.remark}</td>
+                  <td className="td">{taste.remark}</td>
                   {/* แสดงหมายเหตุ */}
-                  <td className="p-2 border border-gray-300 ">
+                  <td className="td ">
                     <div className="w-full h-full flex justify-center items-center space-x-2">
                       <button
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md"
+                        className="btn-edit"
                         onClick={() => {
-                          edit(item);
+                          edit(taste);
                         }}
                       >
                         <i className="fa fa-edit"></i>
                       </button>
 
                       <button
-                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
-                        onClick={(e) => remove(item)}
+                        className="btn-delete"
+                        onClick={(e) => remove(taste)}
                       >
                         <i className="fa fa-times"></i>
                       </button>
@@ -201,9 +203,9 @@ export default function Page() {
                 value={foodTypeId}
                 onChange={(e) => setFoodTypeId(parseInt(e.target.value))} // อัปเดตค่า foodTypeId เมื่อผู้ใช้เลือกประเภทอาหาร
               >
-                {foodTypes.map((item: any) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name} {/* แสดงชื่อประเภทอาหารใน select */}
+                {foodTypes.map((foodType: any) => (
+                  <option key={foodType.id} value={foodType.id}>
+                    {foodType.name} {/* แสดงชื่อประเภทอาหารใน select */}
                   </option>
                 ))}
               </select>
@@ -239,3 +241,4 @@ export default function Page() {
     </>
   );
 }
+

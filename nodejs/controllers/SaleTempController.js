@@ -47,14 +47,8 @@ module.exports = {
     try {
       const saleTemps = await prisma.saleTemp.findMany({
         include: {
-          SaleTempDetails: {
-            include: {
-              Food: true,
-              Taste: true,
-              FoodSize: true,
-            },
-          },
-          Food: true,
+          SaleTempDetails : {select : {id: true}},
+          Food: {select : {name: true, price: true}},
         },
         orderBy: {
           id: "desc",
@@ -131,45 +125,18 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  generateSaleTempDetail: async (req, res) => {
-    try {
-      const saleTemp = await prisma.saleTemp.findFirst({
-        where: {
-          id: req.body.saleTempId,
-        },
-        include: {
-          SaleTempDetails: true,
-        },
-      });
 
-      // if saleTempDetails is empty then generate saleTempDetail
-      if (saleTemp.SaleTempDetails.length === 0) {
-        for (let i = 0; i < saleTemp.qty; i++) {
-          await prisma.saleTempDetail.create({
-            data: {
-              saleTempId: saleTemp.id,
-              foodId: saleTemp.foodId,
-            },
-          });
-        }
-      }
-
-      return res.send({ message: "success" });
-    } catch (e) {
-      return res.status(500).send({ error: e.message });
-    }
-  },
   info: async (req, res) => {
     try {
       const saleTemp = await prisma.saleTemp.findFirst({
         where: {
           id: parseInt(req.params.id),
         },
-        include: {
+        select: {
           Food: {
-            include: {
+            select: {
               FoodType: {
-                include: {
+                select: {
                   Tastes: {
                     where: {
                       status: "use",
@@ -188,9 +155,12 @@ module.exports = {
             },
           },
           SaleTempDetails: {
-            include: {
-              Food: true,
-              FoodSize: true,
+            select: {
+              foodSizeId: true,
+              tasteId: true,
+              saleTempId: true,
+              id: true,
+              Food : {select : {name: true}},
             },
             orderBy: {
               id: "asc",
@@ -268,43 +238,7 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-  createSaleTempDetail: async (req, res) => {
-    try {
-      const saleTempId = req.body.saleTempId;
 
-      const saleTempDetail = await prisma.saleTempDetail.findFirst({
-        where: {
-          saleTempId: saleTempId,
-        },
-      });
-
-      await prisma.saleTempDetail.create({
-        data: {
-          saleTempId: saleTempDetail.saleTempId,
-          foodId: saleTempDetail.foodId,
-        },
-      });
-
-      const countSaleTempDetail = await prisma.saleTempDetail.count({
-        where: {
-          saleTempId: saleTempId,
-        },
-      });
-
-      await prisma.saleTemp.update({
-        where: {
-          id: saleTempId,
-        },
-        data: {
-          qty: countSaleTempDetail,
-        },
-      });
-
-      return res.send({ message: "success" });
-    } catch (e) {
-      return res.status(500).send({ error: e.message });
-    }
-  },
   removeSaleTempDetail: async (req, res) => {
     try {
       const saleTempDetailId = req.body.saleTempDetailId;
