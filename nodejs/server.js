@@ -67,26 +67,26 @@ app.post('/api/organization/upload', (req, res) => organizationController.upload
 //
 // saleTemp
 //
+app.get('/api/saleTemp/list', (req, res) => saleTempController.list(req, res));
 app.post('/api/saleTemp/printBillAfterPay', (req, res) => saleTempController.printBillAfterPay(req, res));
 app.post('/api/saleTemp/endSale', (req, res) => saleTempController.endSale(req, res));
 app.post('/api/saleTemp/printBillBeforePay', (req, res) => saleTempController.printBillBeforePay(req, res));
-app.delete('/api/saleTemp/removeSaleTempDetail', (req, res) => saleTempController.removeSaleTempDetail(req, res));
-app.get('/api/saleTemp/info/:id', (req, res) => saleTempController.info(req, res));
+app.post('/api/saleTemp/create', (req, res) => saleTempController.create(req, res));
 app.put('/api/saleTemp/updateQty', (req, res) => saleTempController.updateQty(req, res));
 app.delete('/api/saleTemp/removeAll', (req, res) => saleTempController.removeAll(req, res));
 app.delete('/api/saleTemp/remove/:id', (req, res) => saleTempController.remove(req, res));
-app.get('/api/saleTemp/list', (req, res) => saleTempController.list(req, res));
-app.post('/api/saleTemp/create', (req, res) => saleTempController.create(req, res));
 
 //
 // saleTempDetail
 //
+app.get('/api/saleTemp/info/:id', (req, res) => saleTempController.info(req, res));
 app.post('/api/saleTempDetail/createForQty', (req, res) => saleTempDetailController.createForQty(req, res));
-app.post('/api/saleTempDetail/create', (req, res) => saleTempController.create(req, res));
-app.put('/api/saleTempDetail/unselectSize', (req, res) => saleTempDetailController.unselectSize(req, res));
-app.put('/api/saleTempDetail/selectSize', (req, res) => saleTempDetailController.selectSize(req, res));
-app.put('/api/saleTempDetail/unselectTaste', (req, res) => saleTempDetailController.unselectTaste(req, res));
+app.post('/api/saleTempDetail/create', (req, res) => saleTempDetailController.create(req, res));
 app.put('/api/saleTempDetail/selectTaste', (req, res) => saleTempDetailController.selectTaste(req, res));
+app.put('/api/saleTempDetail/unselectTaste', (req, res) => saleTempDetailController.unselectTaste(req, res));
+app.put('/api/saleTempDetail/selectSize', (req, res) => saleTempDetailController.selectSize(req, res));
+app.put('/api/saleTempDetail/unselectSize', (req, res) => saleTempDetailController.unselectSize(req, res));
+app.delete('/api/saleTempDetail/remove', (req, res) => saleTempDetailController.remove(req, res));
 
 //
 // food

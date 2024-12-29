@@ -1,4 +1,5 @@
 import "./globals.css";
+import CheckSignin from "./(backoffice)/components/checkSignin";
 
 export default function RootLayout({
   children,
@@ -34,7 +35,9 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <CheckSignin />
+        {children}</body>
     </html>
   );
 }

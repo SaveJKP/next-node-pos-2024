@@ -123,7 +123,7 @@ export default function Page() {
                   Login to management your Project
                   <br />
                   <span className="text-cyan-400 text-md">
-                    Enjoy your Coding with Kobdemy
+                    Enjoy your Coding 
                   </span>
                 </span>
               </div>

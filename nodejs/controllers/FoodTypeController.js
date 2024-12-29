@@ -11,7 +11,7 @@ module.exports = {
           status: "use", // เงื่อนไขเลือกเฉพาะรายการที่ยังอยู่ในสถานะ 'use'
         },
         orderBy: {
-          id: "asc", // 
+          id: "desc", // 
         },
       });
 

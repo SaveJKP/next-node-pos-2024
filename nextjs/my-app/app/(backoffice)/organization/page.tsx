@@ -157,7 +157,9 @@ const OrganizationPage = () => {
 
         <button
           onClick={save}
-          className="mt-3 w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+          disabled={!fileSelected}
+          className=  {`mt-3 w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300   ${!fileSelected? "opacity-50 cursor-not-allowed"
+                                : ""}`}
         >
           <i className="fa fa-save mr-2"></i>
           บันทึก

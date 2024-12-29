@@ -2,6 +2,27 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 module.exports = {
+  list: async (req, res) => {
+    try {
+      const saleTemps = await prisma.saleTemp.findMany({
+        select: {
+          id: true,
+          qty: true,
+          SaleTempDetails: {
+            select: { id: true, FoodSize: { select: { moneyAdded: true } } },
+          },
+          Food: { select: { name: true, price: true } },
+        },
+        orderBy: {
+          id: "desc",
+        },
+      });
+
+      return res.send({ results: saleTemps });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
+  },
   create: async (req, res) => {
     try {
       // check row saleTemp
@@ -39,23 +60,6 @@ module.exports = {
       }
 
       return res.send({ message: "success" });
-    } catch (e) {
-      return res.status(500).send({ error: e.message });
-    }
-  },
-  list: async (req, res) => {
-    try {
-      const saleTemps = await prisma.saleTemp.findMany({
-        include: {
-          SaleTempDetails : {select : {id: true}},
-          Food: {select : {name: true, price: true}},
-        },
-        orderBy: {
-          id: "desc",
-        },
-      });
-
-      return res.send({ results: saleTemps });
     } catch (e) {
       return res.status(500).send({ error: e.message });
     }
@@ -125,7 +129,6 @@ module.exports = {
       return res.status(500).send({ error: e.message });
     }
   },
-
   info: async (req, res) => {
     try {
       const saleTemp = await prisma.saleTemp.findFirst({
@@ -160,7 +163,7 @@ module.exports = {
               tasteId: true,
               saleTempId: true,
               id: true,
-              Food : {select : {name: true}},
+              Food: { select: { name: true } },
             },
             orderBy: {
               id: "asc",
@@ -170,106 +173,6 @@ module.exports = {
       });
 
       return res.send({ results: saleTemp });
-    } catch (e) {
-      return res.status(500).send({ error: e.message });
-    }
-  },
-  selectTaste: async (req, res) => {
-    try {
-      await prisma.saleTempDetail.update({
-        where: {
-          id: req.body.saleTempDetailId,
-        },
-        data: {
-          tasteId: req.body.tasteId,
-        },
-      });
-
-      return res.send({ message: "success" });
-    } catch (e) {
-      return res.status(500).send({ error: e.message });
-    }
-  },
-  unselectTaste: async (req, res) => {
-    try {
-      await prisma.saleTempDetail.update({
-        where: {
-          id: req.body.saleTempDetailId,
-        },
-        data: {
-          tasteId: null,
-        },
-      });
-
-      return res.send({ message: "success" });
-    } catch (e) {
-      return res.status(500).send({ error: e.message });
-    }
-  },
-  selectSize: async (req, res) => {
-    try {
-      await prisma.saleTempDetail.update({
-        where: {
-          id: req.body.saleTempDetailId,
-        },
-        data: {
-          foodSizeId: req.body.sizeId,
-        },
-      });
-
-      return res.send({ message: "success" });
-    } catch (e) {
-      return res.status(500).send({ error: e.message });
-    }
-  },
-  unselectSize: async (req, res) => {
-    try {
-      await prisma.saleTempDetail.update({
-        where: {
-          id: req.body.saleTempDetailId,
-        },
-        data: {
-          foodSizeId: null,
-        },
-      });
-
-      return res.send({ message: "success" });
-    } catch (e) {
-      return res.status(500).send({ error: e.message });
-    }
-  },
-
-  removeSaleTempDetail: async (req, res) => {
-    try {
-      const saleTempDetailId = req.body.saleTempDetailId;
-      const saleTempDetail = await prisma.saleTempDetail.findFirst({
-        where: {
-          id: saleTempDetailId,
-        },
-      });
-
-      await prisma.saleTempDetail.delete({
-        where: {
-          id: saleTempDetailId,
-        },
-      });
-
-      const countSaleTempDetail = await prisma.saleTempDetail.count({
-        where: {
-          saleTempId: saleTempDetail.saleTempId,
-        },
-      });
-
-      await prisma.saleTemp.update({
-        where: {
-          id: saleTempDetail.saleTempId,
-        },
-        data: {
-          qty: countSaleTempDetail,
-        },
-      });
-
-      return res.send({ message: "success" });
     } catch (e) {
       return res.status(500).send({ error: e.message });
     }

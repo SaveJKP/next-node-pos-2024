@@ -42,24 +42,11 @@ export default function Page() {
   const openModalBill = () => setIsOpenModalBill(true);
 
   useEffect(() => {
-    getFoods();
+    fetchDataFilterFoods("all");
     fetchDataSaleTemp();
   }, []);
 
-  const getFoods = async () => {
-    try {
-      const res = await axios.get(config.apiServer + "/api/food/list");
-      setFoods(res.data.results);
-    } catch (e: any) {
-      Swal.fire({
-        title: "error",
-        text: e.message,
-        icon: "error",
-      });
-    }
-  };
-
-  const filterFoods = async (foodType: string) => {
+  const fetchDataFilterFoods = async (foodType: string) => {
     try {
       const res = await axios.get(
         config.apiServer + "/api/food/filter/" + foodType
@@ -75,18 +62,18 @@ export default function Page() {
   };
 
   //ฟังก์ชันบวกเงินของขนาดอาหาร
-  const sumMoneyAdded = (saleTempDetails: any) => {
-    let sum = 0;
+  const sumMoneyForFoodSize = (saleTempDetails: any) => {
+    let sumFoodSize = 0;
 
     for (let i = 0; i < saleTempDetails.length; i++) {
       const item = saleTempDetails[i];
-      sum += item.FoodSize?.moneyAdded || 0;
+      sumFoodSize += item.FoodSize?.moneyAdded || 0;
     }
-    return sum;
+    return sumFoodSize;
   };
 
   //ฟังก์ชันบวกเงินของอาหาร จากจำนวนอาหาร
-  const sumAmount = (saleTemps: any) => {
+  const sumMoneyForAmount = (saleTemps: any) => {
     let sum = 0;
     saleTemps.forEach((item: any) => {
       sum += item.Food.price * item.qty;
@@ -100,15 +87,15 @@ export default function Page() {
       const res = await axios.get(config.apiServer + "/api/saleTemp/list");
       setSaleTemps(res.data.results);
 
-      const results = res.data.results;
+      const saleTemps = res.data.results;
       let sum = 0;
 
-      results.forEach((item: any) => {
-        sum += sumMoneyAdded(item.SaleTempDetails);
+      saleTemps.forEach((saleTemp: any) => {
+        sum += sumMoneyForFoodSize(saleTemp.SaleTempDetails);
       });
       setAmountAdded(sum);
 
-      sumAmount(results);
+      sumMoneyForAmount(saleTemps);
     } catch (e: any) {
       Swal.fire({
         title: "error",
@@ -118,7 +105,7 @@ export default function Page() {
     }
   };
 
-  const fetchDataSaleTempInfo = async (saleTempId: number) => {
+  const fetchDataSaleTempDetail = async (saleTempId: number) => {
     try {
       const res = await axios.get(
         config.apiServer + "/api/saleTemp/info/" + saleTempId
@@ -134,6 +121,7 @@ export default function Page() {
       });
     }
   };
+console.log(saleTempDetails);
 
   const createSaleTemp = async (foodId: number) => {
     try {
@@ -234,7 +222,7 @@ export default function Page() {
         payload
       );
       await fetchDataSaleTemp();
-      fetchDataSaleTempInfo(saleTempId);
+      fetchDataSaleTempDetail(saleTempId);
     } catch (e: any) {
       Swal.fire({
         title: "error",
@@ -255,8 +243,8 @@ export default function Page() {
         saleTempDetailId: saleTempDetailId,
       };
 
-      await axios.put(config.apiServer + "/api/saleTempDatail/selectTaste", payload);
-      fetchDataSaleTempInfo(saleTempId);
+      await axios.put(config.apiServer + "/api/saleTempDetail/selectTaste", payload);
+      fetchDataSaleTempDetail(saleTempId);
     } catch (e: any) {
       Swal.fire({
         title: "error",
@@ -279,7 +267,7 @@ export default function Page() {
         config.apiServer + "/api/saleTempDetail/unSelectTaste",
         payload
       );
-      fetchDataSaleTempInfo(saleTempId);
+      fetchDataSaleTempDetail(saleTempId);
     } catch (e: any) {
       Swal.fire({
         title: "error",
@@ -301,7 +289,7 @@ export default function Page() {
       };
 
       await axios.put(config.apiServer + "/api/saleTempDetail/selectSize", payload);
-      await fetchDataSaleTempInfo(saleTempId);
+      await fetchDataSaleTempDetail(saleTempId);
       await fetchDataSaleTemp();
     } catch (e: any) {
       Swal.fire({
@@ -319,7 +307,7 @@ export default function Page() {
       };
 
       await axios.put(config.apiServer + "/api/saleTempDetail/unSelectSize", payload);
-      await fetchDataSaleTempInfo(saleTempId);
+      await fetchDataSaleTempDetail(saleTempId);
       await fetchDataSaleTemp();
     } catch (e: any) {
       Swal.fire({
@@ -341,7 +329,7 @@ export default function Page() {
         payload
       );
       await fetchDataSaleTemp();
-      await fetchDataSaleTempInfo(saleTempId);
+      await fetchDataSaleTempDetail(saleTempId);
     } catch (e: any) {
       Swal.fire({
         title: "error",
@@ -358,11 +346,11 @@ export default function Page() {
       };
 
       await axios.delete(
-        config.apiServer + "/api/saleTemp/removeSaleTempDetail",
+        config.apiServer + "/api/saleTempDetail/remove",
         { data: payload }
       );
       await fetchDataSaleTemp();
-      fetchDataSaleTempInfo(saleTempId);
+      fetchDataSaleTempDetail(saleTempId);
     } catch (e: any) {
       Swal.fire({
         title: "error",
@@ -477,21 +465,21 @@ export default function Page() {
             />
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center"
-              onClick={() => filterFoods("food")}
+              onClick={() => fetchDataFilterFoods("food")}
             >
               <i className="fa fa-hamburger mr-2"></i>
               อาหาร
             </button>
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center"
-              onClick={() => filterFoods("drink")}
+              onClick={() => fetchDataFilterFoods("drink")}
             >
               <i className="fa fa-coffee mr-2"></i>
               เครื่องดื่ม
             </button>
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center"
-              onClick={() => filterFoods("all")}
+              onClick={() => fetchDataFilterFoods("all")}
             >
               <i className="fa fa-list mr-2"></i>
               ทั้งหมด

@@ -336,7 +336,8 @@ export default function Page() {
 
           <div className=" border-gray-300 mt-4 flex justify-end space-x-3">
             <button
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              className= {`px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600  ${!myFile ? "opacity-50 cursor-not-allowed"
+                                : ""}`}
               onClick={() => {
                 save();
                 closeModal();
