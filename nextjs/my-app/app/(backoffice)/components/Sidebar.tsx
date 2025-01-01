@@ -101,14 +101,7 @@ export default function Sidebar() {
 
         <nav className=" ml-4 mt-10">
           <ul className="gap-5 flex flex-col text-blue-500">
-            {userLevel === "admin" && (
-              <li className="">
-                <Link href="/dashboard" className="">
-                  <i className="nav-icon fas fa-tachometer-alt mr-2"></i>
-                  Dashboard
-                </Link>
-              </li>
-            )}
+            
 
             {userLevel === "admin" || userLevel === "user" ? (
               <li className="">
@@ -178,6 +171,14 @@ export default function Sidebar() {
                   </Link>
                 </li>
               </>
+            )}
+            {userLevel === "admin" && (
+              <li className="">
+                <Link href="/dashboard" className="">
+                  <i className="nav-icon fas fa-tachometer-alt mr-2"></i>
+                  Dashboard
+                </Link>
+              </li>
             )}
           </ul>
         </nav>
